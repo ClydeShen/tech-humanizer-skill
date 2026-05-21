@@ -48,6 +48,8 @@ Findings are grouped into:
 - Language
 - Style and formatting
 - Communication intent
+- Markup, citations, and sources
+- Comment-style residue
 
 Each non-empty group includes specific fragments, the issue, and a rewrite example.
 
@@ -70,7 +72,14 @@ The profile file is ignored by Git by default.
 |-- references/
 |   |-- ai-markers.md
 |   |-- technical-terms.md
-|   `-- profile-schema.md
+|   |-- profile-schema.md
+|   |-- outcome/
+|   |   |-- rewrite-playbook.md
+|   |   |-- channel-style.md
+|   |   |-- source-and-markup-integrity.md
+|   |   `-- final-rubric.md
+|   `-- lexicons/
+|       `-- ai-style-lexicon.json
 |-- assets/
 |   `-- detection-report-template.txt
 |-- scripts/
@@ -83,7 +92,13 @@ The profile file is ignored by Git by default.
 `-- package.json
 ```
 
-`SKILL.md` is intentionally short. Detailed marker rules live in `references/` and are loaded only when needed.
+`SKILL.md` is intentionally short. Detailed marker rules and outcome guidance live in `references/` and are loaded only when needed.
+
+The reference layout separates:
+
+- `ai-markers.md`: diagnostic field guide based on Wikipedia's AI-writing signs.
+- `outcome/`: practical rewrite behavior, channel style, source/markup integrity, and final self-check rubric.
+- `lexicons/`: structured marker phrases for stricter lookup or future scripted scanning.
 
 ## Validate Locally
 

@@ -18,10 +18,17 @@ REQUIRED_MARKERS = {
     "C5",
     "C6",
     "C7",
+    "C8",
+    "C9",
+    "C10",
     "L1",
     "L2",
     "L3",
     "L4",
+    "L5",
+    "L6",
+    "L7",
+    "L8",
     "S1",
     "S2",
     "S3",
@@ -30,10 +37,22 @@ REQUIRED_MARKERS = {
     "S6",
     "S7",
     "S8",
+    "S9",
+    "S10",
     "I1",
     "I2",
     "I3",
     "I4",
+    "I5",
+    "M1",
+    "M2",
+    "M3",
+    "M4",
+    "M5",
+    "W1",
+    "W2",
+    "W3",
+    "W4",
 }
 
 
@@ -92,15 +111,38 @@ def validate_skill() -> None:
         "references/ai-markers.md",
         "references/technical-terms.md",
         "references/profile-schema.md",
+        "references/outcome/rewrite-playbook.md",
+        "references/outcome/channel-style.md",
+        "references/outcome/source-and-markup-integrity.md",
+        "references/outcome/final-rubric.md",
+        "references/lexicons/ai-style-lexicon.json",
         "assets/detection-report-template.txt",
     ]:
         if not (ROOT / rel_path).exists():
             fail(f"Missing referenced file: {rel_path}")
 
+    lexicon_path = ROOT / "references" / "lexicons" / "ai-style-lexicon.json"
+    try:
+        lexicon = json.loads(read_text(lexicon_path))
+    except json.JSONDecodeError as exc:
+        fail(f"ai-style-lexicon.json is not valid JSON: {exc}")
+    required_lexicon_keys = {
+        "high_density_ai_vocabulary",
+        "assistant_service_language",
+        "knowledge_cutoff_disclaimers",
+        "source_laundering_phrases",
+        "internal_reference_leaks",
+        "placeholder_patterns",
+        "inflated_formality",
+    }
+    missing_lexicon_keys = required_lexicon_keys - lexicon.keys()
+    if missing_lexicon_keys:
+        fail(f"ai-style-lexicon.json missing keys: {', '.join(sorted(missing_lexicon_keys))}")
+
 
 def validate_markers() -> None:
     marker_text = read_text(ROOT / "references" / "ai-markers.md")
-    found = set(re.findall(r"\b([CLSI][0-9]+)\.", marker_text))
+    found = set(re.findall(r"\b([CLSIMW][0-9]+)\.", marker_text))
     missing = REQUIRED_MARKERS - found
     if missing:
         fail(f"ai-markers.md is missing marker sections: {', '.join(sorted(missing))}")
@@ -147,7 +189,45 @@ def validate_evals() -> None:
                 fail(f"eval {index} assertion requires name and description")
         covered_markers.update(item.get("covers", []))
 
-    minimum = {"C1", "C2", "C3", "C4", "C5", "C6", "L1", "L2", "L3", "L4", "S1", "S2", "S3", "S4", "S6", "S7", "S8", "I1", "I2", "I3", "I4"}
+    minimum = {
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C9",
+        "C10",
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6",
+        "L7",
+        "L8",
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S6",
+        "S7",
+        "S8",
+        "I1",
+        "I2",
+        "I3",
+        "I4",
+        "I5",
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5",
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+    }
     missing_coverage = minimum - covered_markers
     if missing_coverage:
         fail(f"evals.json missing coverage for: {', '.join(sorted(missing_coverage))}")

@@ -1,17 +1,73 @@
 # AI Writing Marker Reference
 
-This reference is based on the marker families described in Wikipedia's "Signs of AI writing" guidance, adapted for technical documents, emails, messages, and collaborative writing.
+This reference distills the practical signals from Wikipedia's "Signs of AI writing" guidance for technical documents, emails, chat messages, release notes, PR text, and collaborative writing.
 
-Use it as a diagnostic map, not as a word blacklist. A marker matters when it makes the text sound generated, generic, evasive, over-polished, or assistant-authored.
+Use it as a diagnostic map, not as a verdict machine. A marker means "this passage may read AI-shaped"; it is not proof that AI wrote it. Many markers are acceptable in the right context. The skill's job is to remove the generated feel while preserving meaning, technical accuracy, and the user's intent.
 
 ## Contents
 
+- Operating rules
+- Severity levels
 - Content markers
 - Language markers
 - Style and formatting markers
 - Communication intent markers
-- Reference and citation leaks
+- Markup, citation, and source markers
+- Wikipedia/comment-style markers
+- Humanization strategy
 - Detection notes
+
+## Operating Rules
+
+- Treat clusters as stronger evidence than isolated words. One "robust" in a technical design doc is weak; "robust, intricate, pivotal, showcasing" in the same paragraph is strong.
+- Preserve domain language before applying AI-vocabulary rules. Check `references/technical-terms.md`.
+- Do not invent facts to replace vague claims. If the source text lacks evidence, rewrite the sentence to be narrower or ask for the missing detail.
+- Separate "AI-shaped" from "bad writing." Some human writing is vague, formal, or promotional; report the risk and improve the prose without accusing the writer.
+- Prefer concrete edits over labels. "Replace 'stands as a testament' with the actual outcome" is more useful than "this sounds AI."
+
+## Severity Levels
+
+Use severity to decide how aggressively to rewrite.
+
+### High
+
+Near-certain generated-text residue:
+
+- assistant service language in a final document;
+- knowledge-cutoff or training-data disclaimers;
+- leaked source/search tokens such as `turn0search0`, `oaicite`, `contentReference`;
+- placeholder residue such as `[Your Name]`;
+- fake or malformed citation syntax;
+- Markdown/HTML/source markup leaking into prose.
+
+Action: remove or repair these every time.
+
+### Medium
+
+Strong AI-writing tells when repeated:
+
+- grand importance claims with no evidence;
+- vague attribution;
+- high-density AI vocabulary;
+- dangling participial commentary;
+- formulaic balanced paragraphs;
+- decorative formatting;
+- rigid inline-header lists;
+- excessive hedging.
+
+Action: rewrite when the text has more than one signal, or when the passage is meant to sound like a human author.
+
+### Low
+
+Weak signals that depend heavily on context:
+
+- one formal transition word;
+- one em dash;
+- one three-item list;
+- one "note that" in documentation;
+- a table used for real comparison.
+
+Action: preserve when useful. Rewrite only when it contributes to an artificial pattern.
 
 ## Content Markers
 
@@ -26,11 +82,21 @@ Signals:
 - "landmark achievement"
 - "of paramount importance"
 - "defining moment"
+- "speaks to the significance"
+
+Why it reads AI-shaped:
+
+The sentence asserts significance instead of demonstrating it. LLMs often add historical weight when they do not have a specific fact to anchor the claim.
 
 Fix:
 
 - Replace the claim with a specific fact, consequence, metric, date, shipped behavior, or observable result.
 - Delete the grand framing when no evidence is available.
+
+Example:
+
+- AI-shaped: "The release stands as a testament to our engineering excellence."
+- Humanized: "The release cut median API latency from 280 ms to 140 ms."
 
 ### C2. Vague Attribution
 
@@ -43,11 +109,22 @@ Signals:
 - "Research suggests"
 - "Many believe"
 - "It is widely accepted"
+- "Analysts say"
+- "Some have noted"
+
+Why it reads AI-shaped:
+
+It borrows authority without naming the authority. Wikipedia specifically treats vague expert framing as suspect because it resembles generated filler and weak sourcing.
 
 Fix:
 
 - Name the source, date, and finding if the source is real.
 - Otherwise rewrite as the author's own reasoned position.
+
+Example:
+
+- AI-shaped: "Experts argue that retries improve reliability."
+- Humanized: "Retries reduce transient failures when the upstream service recovers quickly."
 
 ### C3. Promotional or Tourism-Like Framing
 
@@ -63,16 +140,29 @@ Signals:
 - "world-class"
 - "game-changing"
 - "unparalleled"
+- "renowned"
+- "rich history"
+- "charming"
+- "bustling"
+
+Why it reads AI-shaped:
+
+Generated prose often defaults to tourism, marketing, or brochure language when it lacks concrete details.
 
 Fix:
 
 - Replace hype with concrete details: what changed, who uses it, how much, how fast, where, or under what constraint.
+- If no concrete detail is known, use neutral description.
 
 ### C4. Dangling Participial Commentary
 
 Signals:
 
-- Sentence-final commentary beginning with "highlighting", "showcasing", "demonstrating", "underscoring", "reflecting", "emphasizing", "illustrating", or "signalling".
+- Sentence-final commentary beginning with "highlighting", "showcasing", "demonstrating", "underscoring", "reflecting", "emphasizing", "illustrating", "signalling", "marking", or "cementing".
+
+Why it reads AI-shaped:
+
+The trailing phrase often restates the sentence and adds interpretive gloss instead of information.
 
 Fix:
 
@@ -88,8 +178,15 @@ Signals:
 - "At its core..."
 - "It is worth noting that..."
 - "This article will explore..."
+- "This section will discuss..."
 - "Despite its X, Y faces challenges..."
-- Overused conclusion formulas such as "In conclusion" or "Looking ahead".
+- "In conclusion..."
+- "Looking ahead..."
+- "From X to Y, ..."
+
+Why it reads AI-shaped:
+
+The structure announces a generic essay frame before making the point. In technical or collaborative writing, humans usually start with the claim, request, risk, or decision.
 
 Fix:
 
@@ -100,7 +197,11 @@ Fix:
 
 Signals:
 
-- Artificial synonyms used to avoid repetition: "software artisan" for developer, "data persistence repository" for database, "application programming interface entrypoint" for API, "keyboard wrangler" for developer.
+- Artificial synonyms used to avoid repetition: "software artisan" for developer, "data persistence repository" for database, "application programming interface entrypoint" for API, "keyboard wrangler" for developer, "digital tapestry" for system, "computational engine" for server.
+
+Why it reads AI-shaped:
+
+LLMs often avoid repeating nouns by rotating synonyms. In technical writing, repeated precise terms are usually clearer.
 
 Fix:
 
@@ -111,12 +212,70 @@ Fix:
 
 Signals:
 
-- Paragraphs that list benefits and challenges without choosing a position.
-- "While X offers many advantages, it also presents challenges..." with no specific tradeoff.
+- "While X offers many advantages, it also presents challenges..."
+- "X has both benefits and drawbacks..."
+- "There are several factors to consider..."
+- Paragraphs that list pros and cons without choosing a position or naming criteria.
+
+Why it reads AI-shaped:
+
+Generated text often hedges toward balanced neutrality even when the task needs a decision, recommendation, or specific tradeoff.
 
 Fix:
 
 - Name the actual tradeoff, affected user, and decision criteria.
+- If the user asked for a recommendation, make one.
+
+### C8. Shallow Exhaustiveness
+
+Signals:
+
+- Broad category sweeps such as "history, culture, economy, and society" or "performance, reliability, scalability, and security" without detail.
+- Lists that try to cover every angle at the same depth.
+- Paragraphs that mention many concepts once and explain none.
+
+Why it reads AI-shaped:
+
+LLMs often optimize for completeness-shaped coverage rather than relevance. The prose feels like an outline expanded into sentences.
+
+Fix:
+
+- Choose the one or two dimensions that matter to the user's purpose.
+- Replace survey-style breadth with specific depth.
+
+### C9. Over-Contextualized Background
+
+Signals:
+
+- Opening with generic history before the requested topic.
+- Explaining obvious background to an expert audience.
+- Long setup before a small operational answer.
+
+Why it reads AI-shaped:
+
+Generated answers tend to pad with context to sound comprehensive.
+
+Fix:
+
+- Start at the user's level of knowledge.
+- Keep only context that changes the decision or action.
+
+### C10. False Specificity
+
+Signals:
+
+- Precise-sounding but unsupported facts.
+- Named entities, dates, or rankings that appear without source or context.
+- "The first", "the largest", "the most popular", "widely regarded" without evidence.
+
+Why it reads AI-shaped:
+
+This is a dangerous failure mode: the prose sounds concrete but may be hallucinated.
+
+Fix:
+
+- Verify the claim before preserving it.
+- If verification is unavailable, soften the claim to what is actually supported or ask for a source.
 
 ## Language Markers
 
@@ -126,22 +285,20 @@ Common markers:
 
 - additionally
 - align with
-- bolstered
+- bolster / bolstered
 - crucial
 - delve
 - emphasizing
 - enduring
 - enhance
-- fostering
+- foster / fostering
 - garner
 - highlight
 - interplay
-- intricate
-- intricacies
+- intricate / intricacies
 - key
 - landscape
-- meticulous
-- meticulously
+- meticulous / meticulously
 - pivotal
 - robust
 - showcase
@@ -151,10 +308,15 @@ Common markers:
 - valuable
 - vibrant
 
+Why it reads AI-shaped:
+
+These words are not wrong individually. The problem is density: generated text often stacks abstract evaluative words instead of giving specifics.
+
 Fix:
 
 - Replace abstract words with specific action verbs, measurable qualities, or direct nouns.
-- If a word is a legitimate technical term in context, preserve it.
+- Delete importance adjectives when the sentence still works without them.
+- Preserve a word if it is a legitimate technical term in context.
 
 ### L2. Copula Avoidance
 
@@ -164,6 +326,7 @@ Signals:
 - "features" where "has" or "includes" works.
 - "represents" where "is" works.
 - "functions as" where "is" works.
+- "acts as a" where "is a" works.
 
 Fix:
 
@@ -188,11 +351,69 @@ Signals:
 
 - Three adjectives or nouns used rhythmically: "fast, reliable, and scalable"; "simple, powerful, and intuitive".
 - Exactly three parallel bullets where one or two would do.
+- Repeated triads across a page.
 
 Fix:
 
 - Keep only distinct, meaningful items.
 - Replace vague triples with concrete constraints or outcomes.
+
+### L5. Over-Polished Transition Chains
+
+Signals:
+
+- "Moreover", "Furthermore", "Additionally", "Consequently", "Ultimately" stacked across adjacent paragraphs.
+- Every paragraph begins with a transition.
+
+Why it reads AI-shaped:
+
+The text sounds smoothed by a template rather than paced by a person.
+
+Fix:
+
+- Remove transitions that do not clarify logic.
+- Use direct sentence order instead of connective padding.
+
+### L6. Inflated Formal Register
+
+Signals:
+
+- "utilize" for "use"
+- "facilitate" for "help" or "enable"
+- "commence" for "start"
+- "prior to" for "before"
+- "subsequent to" for "after"
+- "in order to" where "to" works
+- "at this point in time" for "now"
+
+Fix:
+
+- Prefer the shorter word unless the formal term is expected in the domain.
+- Apply user profile preferences first.
+
+### L7. Synthetic Caution
+
+Signals:
+
+- "may", "might", "could potentially", "generally", "often", "typically" stacked in one sentence.
+- Caution that avoids taking a position when the evidence is already in the prompt.
+
+Fix:
+
+- Keep uncertainty when it is real.
+- Remove hedging that only protects the sentence from being useful.
+
+### L8. Repetition With Slight Rephrasing
+
+Signals:
+
+- The same claim repeated in adjacent sentences using different wording.
+- A summary sentence that adds no new information after a paragraph.
+
+Fix:
+
+- Keep the clearest version once.
+- Merge repeated sentences only when each contributes a distinct detail.
 
 ## Style and Formatting Markers
 
@@ -204,13 +425,14 @@ Signal:
 
 Fix:
 
-- Lowercase non-proper nouns, preserving acronyms, product names, and sentence starts.
+- Lowercase non-proper nouns, preserving acronyms, product names, headings, and sentence starts.
 
 ### S2. Decorative Bold
 
 Signal:
 
 - Bold applied to ordinary adjectives, verbs, or whole phrases just to add emphasis.
+- Multiple bold phrases in short prose where none are warnings, labels, or UI names.
 
 Fix:
 
@@ -231,16 +453,18 @@ Fix:
 Signal:
 
 - Multiple em dashes in one sentence or repeated dashes across a short passage.
+- Em dashes used as the default connector for every aside.
 
 Fix:
 
-- Use commas, parentheses, colons, or sentence breaks. In technical contexts, ASCII hyphens are often more natural than typographic punctuation.
+- Use commas, parentheses, colons, semicolons, or sentence breaks.
+- In technical contexts, ASCII hyphens are often more natural than typographic punctuation.
 
 ### S5. Curly Quotes in Technical Text
 
 Signal:
 
-- Curly quotes around code strings, CLI examples, identifiers, or chat-like prose.
+- Curly quotes around code strings, CLI examples, identifiers, JSON keys, config values, or chat-like prose.
 
 Fix:
 
@@ -261,6 +485,7 @@ Fix:
 Signal:
 
 - `---` immediately before headings.
+- Repeated horizontal rules used as decorative separators.
 
 Fix:
 
@@ -271,10 +496,34 @@ Fix:
 Signal:
 
 - Tables used for simple lists or explanations where prose is easier to scan.
+- A table with one row or one meaningful column.
 
 Fix:
 
 - Keep tables only for comparison, matrices, structured data, or repeated fields.
+
+### S9. Over-Sectioned Output
+
+Signal:
+
+- Too many headings for a short answer.
+- "Overview", "Key Takeaways", "Conclusion" around two paragraphs of content.
+
+Fix:
+
+- Remove headings unless they help scanning.
+- Use paragraphs for short content.
+
+### S10. Formulaic Summary Blocks
+
+Signal:
+
+- "Key takeaways" or "In summary" sections that repeat the preceding content.
+- TL;DR blocks added when the user did not ask for one and the text is already short.
+
+Fix:
+
+- Delete summaries that do not add a decision, next step, or constraint.
 
 ## Communication Intent Markers
 
@@ -291,11 +540,17 @@ Signals:
 - "Is there anything else I can help you with?"
 - "Feel free to ask"
 - "Don't hesitate to reach out"
+- "Let me know if you need anything else"
+
+Why it reads AI-shaped:
+
+It reveals the stance of a helpful assistant instead of the stance of the actual author.
 
 Fix:
 
 - Delete service framing.
 - Keep only the substantive message.
+- In emails, replace generic help offers with a concrete next step only if one is needed.
 
 ### I2. Knowledge-Cutoff Disclaimers
 
@@ -306,6 +561,7 @@ Signals:
 - "Based on my training data"
 - "I do not have information beyond..."
 - "My knowledge only extends to..."
+- "I may not have the most current information"
 
 Fix:
 
@@ -320,6 +576,7 @@ Signals:
 - `[Company Name]`
 - `[Project Name]`
 - `[Date]`
+- `[Insert details]`
 - "Insert X here"
 - "Replace this with..."
 - "Add relevant details..."
@@ -327,7 +584,7 @@ Signals:
 Fix:
 
 - Replace with actual details.
-- If details are unknown, rewrite to avoid the placeholder.
+- If details are unknown, rewrite to avoid the placeholder or ask for the missing value.
 
 ### I4. Hedging and Meta-Commentary
 
@@ -341,13 +598,63 @@ Signals:
 - "Notably,"
 - "Importantly,"
 - "Crucially,"
+- "Needless to say"
 
 Fix:
 
 - Start with the substantive claim.
 - Use a structured note or warning only when the content is genuinely a note or warning.
 
-## Reference and Citation Leaks
+### I5. Compliance-Like Neutrality
+
+Signals:
+
+- "It is advisable to..."
+- "One should consider..."
+- "Users may wish to..."
+- "Care should be taken to..."
+
+Why it reads AI-shaped:
+
+The sentence avoids naming the actor or decision owner.
+
+Fix:
+
+- Name the actor: "Platform owners should...", "Run...", "Review..."
+- Keep neutral voice only when the document style requires it.
+
+## Markup, Citation, and Source Markers
+
+Wikipedia's AI-writing guidance puts heavy emphasis on residue that appears when generated text is pasted into an encyclopedia or editing workflow. The same family of issues appears in agent-written docs, emails, and technical notes.
+
+### M1. Raw Markdown or HTML Leaks
+
+Signals:
+
+- `**bold**` in a target format that does not use Markdown.
+- Raw `<ref>`, `<br>`, `<span>`, `<div>`, or HTML entities in plain prose.
+- Unclosed Markdown links or images.
+- Markdown tables copied into email or chat where they render poorly.
+
+Fix:
+
+- Convert markup to the target format.
+- Remove formatting when it is only decorative.
+
+### M2. Broken Wiki or Citation Markup
+
+Signals:
+
+- `[[link]]` or `{{template}}` residue in non-wiki text.
+- Broken footnotes such as `<ref>` without `</ref>`.
+- Citation placeholders not connected to real sources.
+
+Fix:
+
+- Convert to natural text or a valid citation.
+- Ask for the source when the claim depends on it.
+
+### M3. Internal Retrieval and Citation Token Leaks
 
 Signals:
 
@@ -357,19 +664,112 @@ Signals:
 - `contentReference`
 - `attached_file`
 - `[attachment: ...]`
-- broken citation placeholders such as `[citation needed]` in non-Wikipedia prose
-- raw search-query language such as "I found this in search result..."
-- tracking parameters such as `utm_source=chatgpt.com`
+- `grok_card`
+- raw search-result labels
+- tracking URLs such as `utm_source=chatgpt.com`
 
 Fix:
 
 - Strip internal markers.
 - Name the source naturally if a real source exists.
-- Ask for the source if the claim depends on one and none is present.
+- Remove tracking parameters unless they are part of an example about tracking.
+
+### M4. Hallucinated or Unusable Sources
+
+Signals:
+
+- Source title sounds plausible but cannot be verified.
+- Citation does not support the sentence.
+- Dead link used as the only support for a strong claim.
+- A source is named without author, publication, date, or URL when those are required.
+
+Fix:
+
+- Do not polish unsupported claims into a more confident form.
+- Mark the claim as needing a source or rewrite it as an uncited opinion/observation.
+
+### M5. Source-Laundering Language
+
+Signals:
+
+- "According to sources" with no source.
+- "Based on available data" with no data.
+- "Reports indicate" with no report.
+- "It has been documented" with no document.
+
+Fix:
+
+- Name the source or remove the authority signal.
+
+## Wikipedia and Comment-Style Markers
+
+These markers matter when humanizing issue comments, PR comments, review notes, wiki edits, or encyclopedia-like prose.
+
+### W1. Talk-Page Assistant Tone
+
+Signals:
+
+- "I understand your concern"
+- "Thank you for your contribution"
+- "You raise a valid point"
+- "Let's work together to improve..."
+- "I appreciate your perspective"
+
+Fix:
+
+- Use the actual review stance: accept, reject, request evidence, or propose a concrete edit.
+
+### W2. Over-Polite Conflict Avoidance
+
+Signals:
+
+- Long conciliatory openings before a simple disagreement.
+- "While I see where you're coming from..." followed by a direct policy point.
+
+Fix:
+
+- Keep a brief respectful opening if needed, then state the reason.
+
+### W3. Policy Name-Dropping Without Application
+
+Signals:
+
+- Mentions of policy, best practices, guidelines, or consensus without applying them to the concrete text.
+
+Fix:
+
+- State the actual rule and how it affects the sentence, claim, or edit.
+
+### W4. Generic Edit Summaries
+
+Signals:
+
+- "Improved clarity and readability"
+- "Enhanced article quality"
+- "Updated content for accuracy"
+- "Made various improvements"
+
+Fix:
+
+- Name the exact change: "Removed unsourced claim about adoption", "Replaced vague attribution with CNCF survey citation."
+
+## Humanization Strategy
+
+Use this sequence for stronger rewrites:
+
+1. Strip high-severity residue first: assistant language, knowledge cutoff disclaimers, placeholders, leaked references, broken markup.
+2. Protect technical terms and user-preferred domain terms.
+3. Replace vague authority and grand claims with evidence or narrower claims.
+4. Reduce inflated vocabulary and formal padding.
+5. Repair structure: headings, lists, tables, duplicated summaries.
+6. Tune register for the target channel.
+7. Do a final marker pass. If a marker remains for a good reason, leave it.
 
 ## Detection Notes
 
 - A sentence with multiple markers counts once for density.
-- A passage can be human-written and still contain a marker; report it as a style risk, not proof of authorship.
+- Report density as an integer, but do not pretend it is an authorship probability.
+- A passage can be human-written and still contain markers; report it as a style risk, not proof of authorship.
 - For technical documents, protect accepted technical terms before applying vocabulary rules.
 - For user-facing reports, prioritize actionable fixes over exhaustive marker lists.
+- For source-related markers, distinguish "rewrite needed" from "verification needed." Some problems cannot be solved by style editing alone.

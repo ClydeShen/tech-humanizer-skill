@@ -18,6 +18,10 @@ Use this skill for three jobs:
 Read only what the task needs:
 
 - Humanizing or detection: read `references/ai-markers.md`.
+- Humanizing output: also read `references/outcome/rewrite-playbook.md` and `references/outcome/final-rubric.md`.
+- Channel-specific rewrites: read `references/outcome/channel-style.md`.
+- Text with citations, links, Markdown, HTML, wiki markup, or source claims: read `references/outcome/source-and-markup-integrity.md`.
+- Strict marker lookup or scripted scanning: read `references/lexicons/ai-style-lexicon.json`.
 - Technical or product text: also read `references/technical-terms.md`.
 - User asks about profile behavior or persistent learning: read `references/profile-schema.md`.
 - Detection reports: use `assets/detection-report-template.txt` when the user needs a structured report.
@@ -35,13 +39,15 @@ Read only what the task needs:
 ## Humanize Workflow
 
 1. Identify the target format and audience from the request: document, email, message, PR, release note, technical doc, or other.
-2. Load `references/ai-markers.md`. If the text is technical, load `references/technical-terms.md` and treat those terms as protected.
-3. Load `writing-profile.json` from the current working directory if it exists. Apply explicit user preferences and domain terms before general style rules.
-4. Scan the text across the four marker dimensions: content, language, style/formatting, and communication intent. Also check citation/reference leaks and template residue.
-5. Rewrite marked passages using concrete wording, simpler structure, and the user's register.
-6. Preserve technical terminology and identifiers verbatim unless the profile says the user prefers a different term.
-7. Self-check the output against the marker list. Revise again if obvious markers remain.
-8. Return the rewritten text. If the user asked for an explanation, add a short change list after the rewrite.
+2. Load `references/ai-markers.md`, `references/outcome/rewrite-playbook.md`, and `references/outcome/final-rubric.md`.
+3. If the target channel is clear, load `references/outcome/channel-style.md`. If the text contains source claims, citations, links, Markdown, HTML, wiki markup, or retrieval tokens, load `references/outcome/source-and-markup-integrity.md`.
+4. If the text is technical, load `references/technical-terms.md` and treat those terms as protected.
+5. Load `writing-profile.json` from the current working directory if it exists. Apply explicit user preferences and domain terms before general style rules.
+6. Scan the text across the marker dimensions: content, language, style/formatting, communication intent, markup/citations/sources, and comment-style residue.
+7. Rewrite marked passages using concrete wording, simpler structure, and the user's register. Preserve evidence boundaries instead of making unsupported claims sound more confident.
+8. Preserve technical terminology and identifiers verbatim unless the profile says the user prefers a different term.
+9. Self-check the output with `references/outcome/final-rubric.md`. Revise again if any required gate fails.
+10. Return the rewritten text. If the user asked for an explanation, add a short change list after the rewrite.
 
 ### Humanize Output
 
@@ -66,7 +72,7 @@ Input text is empty. Please provide the content you want rewritten.
 2. Split the text into sentences or sentence-like units. Count each sentence at most once.
 3. Mark sentences containing one or more AI markers, ignoring protected technical terms.
 4. Calculate `AI marker density = floor(marked_sentences / total_sentences * 100)`.
-5. Group findings under all four dimensions, even when a section has zero findings.
+5. Group findings under all report dimensions, even when a section has zero findings.
 6. For each non-empty dimension, provide at least one actionable fix with original fragment, issue, and rewrite example.
 
 ### Detect Output
@@ -89,6 +95,12 @@ Style and formatting: <count>
 ...
 
 Communication intent: <count>
+...
+
+Markup, citations, and sources: <count>
+...
+
+Comment-style residue: <count>
 ...
 ```
 

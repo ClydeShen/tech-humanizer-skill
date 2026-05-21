@@ -226,6 +226,134 @@
           "description": "Output avoids 'enhance' unless it is replaced with a specific improvement."
         }
       ]
+    },
+    {
+      "id": "humanize-over-context-and-false-specificity",
+      "covers": ["C9", "C10"],
+      "prompt": "Humanize this product note without inventing facts: \"Since the dawn of cloud computing, teams have searched for better deployment workflows. AtlasFlow is the most widely adopted release tool in the industry and is used by millions of developers worldwide.\"",
+      "expected_output": "A shorter product note that removes generic historical setup and does not preserve unsupported superlatives or unverifiable adoption claims as facts.",
+      "assertions": [
+        {
+          "name": "removes generic background",
+          "description": "Output removes the broad 'Since the dawn of cloud computing' framing."
+        },
+        {
+          "name": "does not launder unsupported facts",
+          "description": "Output does not present 'most widely adopted' or 'millions of developers' as verified facts unless a source is supplied."
+        }
+      ]
+    },
+    {
+      "id": "humanize-transition-and-formality-padding",
+      "covers": ["L5", "L6", "L7", "L8"],
+      "prompt": "Humanize this status update: \"Furthermore, the team will utilize the available telemetry in order to potentially facilitate improved incident response. Additionally, this may generally help improve incident response for the team.\"",
+      "expected_output": "A direct status update that removes stacked transitions, inflated formal words, synthetic caution, and repeated claims.",
+      "assertions": [
+        {
+          "name": "removes transition chain",
+          "description": "Output avoids unnecessary 'Furthermore' and 'Additionally' framing."
+        },
+        {
+          "name": "simplifies formal padding",
+          "description": "Output replaces phrases like 'utilize', 'in order to', and 'facilitate' with simpler wording where appropriate."
+        },
+        {
+          "name": "deduplicates repeated claim",
+          "description": "Output states the incident-response point once unless each sentence adds a distinct detail."
+        }
+      ]
+    },
+    {
+      "id": "detect-markup-and-source-leaks",
+      "covers": ["M1", "M2", "M3", "M4", "M5"],
+      "prompt": "Detect AI writing markers in this text: \"According to sources, the endpoint is deprecated <ref>Release Notes. See turn0search0 and contentReference:2 for details. The change is documented in a major 2025 industry report.\"",
+      "expected_output": "A detection report that flags source laundering, broken markup, internal retrieval token leaks, and unsupported source claims under Markup, citations, and sources.",
+      "assertions": [
+        {
+          "name": "flags source and markup category",
+          "description": "Output includes a Markup, citations, and sources section with findings."
+        },
+        {
+          "name": "identifies leaked tokens",
+          "description": "Output identifies 'turn0search0' and 'contentReference:2' as internal reference leaks."
+        },
+        {
+          "name": "does not treat unsupported source as solved by style",
+          "description": "Output says the vague 'sources' or 'major 2025 industry report' claim needs a real source or narrower wording."
+        }
+      ]
+    },
+    {
+      "id": "humanize-comment-style-residue",
+      "covers": ["W1", "W2", "W3", "W4", "I5"],
+      "prompt": "Humanize this PR review comment: \"Thank you for your contribution. I understand your concern, and you raise a valid point. While I see where you're coming from, best practices suggest improving clarity and readability. Care should be taken to update the implementation.\"",
+      "expected_output": "A concise PR review comment that removes assistant-like politeness padding, applies the actual review stance, and names the concrete requested change.",
+      "assertions": [
+        {
+          "name": "removes talk-page assistant tone",
+          "description": "Output removes generic phrases like 'Thank you for your contribution', 'I understand your concern', and 'you raise a valid point'."
+        },
+        {
+          "name": "replaces vague best-practice language",
+          "description": "Output does not rely on 'best practices' or 'improving clarity and readability' without naming the actual requested change."
+        },
+        {
+          "name": "names actor or action",
+          "description": "Output avoids passive compliance language like 'Care should be taken' and gives a concrete action."
+        }
+      ]
+    },
+    {
+      "id": "outcome-channel-fit-slack-vs-client",
+      "covers": ["OUTCOME", "CHANNEL_STYLE"],
+      "prompt": "Rewrite this twice, once for Slack and once for a client email: \"I am pleased to inform you that the deployment has been completed successfully. Please review your services at your earliest convenience and notify me of any anomalies.\"",
+      "expected_output": "Two distinct rewrites: the Slack version should be short and teammate-like; the client email should be professional, direct, and not padded with ceremonial AI phrases.",
+      "assertions": [
+        {
+          "name": "produces distinct channel registers",
+          "description": "Slack and client email outputs use visibly different levels of formality."
+        },
+        {
+          "name": "removes ceremonial phrasing",
+          "description": "Neither output keeps 'I am pleased to inform you', 'at your earliest convenience', or 'anomalies' when simpler wording fits."
+        }
+      ]
+    },
+    {
+      "id": "outcome-source-boundary",
+      "covers": ["OUTCOME", "SOURCE_INTEGRITY", "M4", "M5", "C10"],
+      "prompt": "Humanize this without inventing or hiding missing evidence: \"Reports indicate that AtlasFlow is the fastest CI/CD tool in the market, with unmatched adoption across Fortune 500 companies.\"",
+      "expected_output": "A rewrite or note that removes vague authority and unsupported superlatives, preserving the source boundary instead of making the claim sound verified.",
+      "assertions": [
+        {
+          "name": "does not polish unsupported claim as fact",
+          "description": "Output does not state that AtlasFlow is the fastest or has unmatched Fortune 500 adoption unless a real source is supplied."
+        },
+        {
+          "name": "flags missing evidence or narrows claim",
+          "description": "Output either asks for evidence, says the claim needs a source, or rewrites it to a narrower supported claim."
+        }
+      ]
+    },
+    {
+      "id": "outcome-final-rubric-human-texture",
+      "covers": ["OUTCOME", "FINAL_RUBRIC"],
+      "prompt": "Humanize this release note using the final rubric: \"This update represents a pivotal milestone in our journey to deliver robust, scalable, and user-centric solutions. Furthermore, it enhances the overall experience. In conclusion, this release underscores our commitment to excellence.\"",
+      "expected_output": "A concise release note with concrete release behavior if available, no ceremonial summary, no stacked transitions, no vague excellence language, and no invented details.",
+      "assertions": [
+        {
+          "name": "removes ceremonial opening and closing",
+          "description": "Output removes 'pivotal milestone', 'journey', 'In conclusion', 'underscores', and 'commitment to excellence'."
+        },
+        {
+          "name": "does not invent details",
+          "description": "Output does not add specific features, metrics, or user outcomes not present in the prompt unless it clearly asks for missing details."
+        },
+        {
+          "name": "ends when the job is done",
+          "description": "Output does not append a generic summary, offer to help, or empty closing line."
+        }
+      ]
     }
   ]
 }

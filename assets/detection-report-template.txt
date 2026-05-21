@@ -23,3 +23,15 @@ Communication intent: <count>
   Fragment: "<text>"
   Issue: <why it reads AI-shaped>
   Rewrite example: "<example>"
+
+Markup, citations, and sources: <count>
+- Location: <paragraph/sentence>
+  Fragment: "<text>"
+  Issue: <why it reads AI-shaped>
+  Rewrite example: "<example>"
+
+Comment-style residue: <count>
+- Location: <paragraph/sentence>
+  Fragment: "<text>"
+  Issue: <why it reads AI-shaped>
+  Rewrite example: "<example>"
