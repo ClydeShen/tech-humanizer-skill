@@ -8,6 +8,10 @@
     "type": "git",
     "url": "https://github.com/ClydeShen/tech-humanizer-skill.git"
   },
+  "homepage": "https://github.com/ClydeShen/tech-humanizer-skill#readme",
+  "bugs": {
+    "url": "https://github.com/ClydeShen/tech-humanizer-skill/issues"
+  },
   "scripts": {
     "validate": "python scripts/validate.py"
   },

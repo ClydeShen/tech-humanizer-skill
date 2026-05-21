@@ -3,7 +3,7 @@
 [![skills.sh](https://skills.sh/b/ClydeShen/tech-humanizer-skill)](https://skills.sh/ClydeShen/tech-humanizer-skill)
 [![Validate Skill](https://github.com/ClydeShen/tech-humanizer-skill/actions/workflows/evals.yml/badge.svg)](https://github.com/ClydeShen/tech-humanizer-skill/actions/workflows/evals.yml)
 
-An Agent Skill for rewriting AI-shaped prose into natural human writing while preserving technical terminology.
+An Agent Skill for rewriting AI-shaped prose into natural human writing while preserving technical terminology. Based on [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing).
 
 It supports documents, emails, chat messages, pull request text, release notes, and technical docs. It can also detect AI-writing marker density and maintain a local writing profile so future rewrites move closer to the user's own wording.
 
@@ -118,28 +118,6 @@ The validation checks:
 - skill length and required references;
 - AI-marker reference coverage;
 - `evals.json` schema and marker coverage.
-
-## Evaluation Set
-
-`evals.json` contains regression prompts for:
-
-- marker removal;
-- technical-term preservation;
-- AI-marker density reporting;
-- style/profile behavior;
-- Markdown formatting cleanup;
-- citation/reference leak removal.
-
-The CI workflow validates that eval coverage stays aligned with the marker reference.
-
-## Sources and Design Basis
-
-This skill is based on:
-
-- [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)
-- [Claude Agent Skills best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
-- [skills-best-practices](https://github.com/mgechev/skills-best-practices)
-- [skills.sh docs](https://www.skills.sh/docs)
 
 ## Contributing
 

@@ -1,6 +1,9 @@
 ---
 name: tech-humanizer-skill
 description: Use this skill when the user asks to humanize, rewrite, de-AI, polish, or detect AI writing in documents, emails, chat messages, pull request text, release notes, technical docs, or other prose. It removes AI-writing markers while preserving technical terminology, reports AI-marker density with concrete fixes, and learns the user's wording preferences, domain terms, and recurring writing habits over time.
+version: 1.0.0
+author: ClydeShen
+license: MIT
 ---
 
 # tech-humanizer-skill
