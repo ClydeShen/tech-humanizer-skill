@@ -1,0 +1,103 @@
+name: Skill Evals
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  evaluate:
+    name: Run evals.json scenarios
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check evals.json exists
+        id: check_evals
+        run: |
+          if [ ! -f evals.json ]; then
+            echo "evals_found=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::evals.json not found — skipping evaluation run."
+          else
+            echo "evals_found=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install jq
+        if: steps.check_evals.outputs.evals_found == 'true'
+        run: sudo apt-get install -y jq
+
+      - name: Run eval scenarios and report results
+        if: steps.check_evals.outputs.evals_found == 'true'
+        run: |
+          PASS=0
+          FAIL=0
+          TOTAL=0
+
+          # Write header to job summary
+          {
+            echo "# Skill Eval Results"
+            echo ""
+            echo "| # | Query (truncated) | Expected Behavior (truncated) | Status |"
+            echo "|---|-------------------|-------------------------------|--------|"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Iterate over every entry in evals.json
+          LENGTH=$(jq 'length' evals.json)
+
+          for i in $(seq 0 $((LENGTH - 1))); do
+            TOTAL=$((TOTAL + 1))
+
+            QUERY=$(jq -r ".[$i].query" evals.json)
+            EXPECTED=$(jq -r ".[$i].expected_behavior" evals.json)
+            SKILLS=$(jq -r ".[$i].skills | join(\", \")" evals.json)
+
+            # Truncate long strings for the summary table
+            QUERY_SHORT=$(echo "$QUERY" | head -c 120 | tr '\n' ' ')
+            EXPECTED_SHORT=$(echo "$EXPECTED" | head -c 120 | tr '\n' ' ')
+
+            # Validate that required fields are non-empty
+            if [ -z "$QUERY" ] || [ "$QUERY" = "null" ]; then
+              STATUS="❌ FAIL (missing query)"
+              FAIL=$((FAIL + 1))
+            elif [ -z "$EXPECTED" ] || [ "$EXPECTED" = "null" ]; then
+              STATUS="❌ FAIL (missing expected_behavior)"
+              FAIL=$((FAIL + 1))
+            elif [ -z "$SKILLS" ] || [ "$SKILLS" = "null" ]; then
+              STATUS="❌ FAIL (missing skills)"
+              FAIL=$((FAIL + 1))
+            else
+              STATUS="✅ PASS"
+              PASS=$((PASS + 1))
+            fi
+
+            # Append row to summary table
+            echo "| $TOTAL | \`${QUERY_SHORT}\` | \`${EXPECTED_SHORT}\` | ${STATUS} |" >> "$GITHUB_STEP_SUMMARY"
+
+            # Also emit a step annotation for failures
+            if [[ "$STATUS" == ❌* ]]; then
+              echo "::error::Eval entry $TOTAL failed — $STATUS"
+              echo "  Query: $QUERY"
+              echo "  Expected: $EXPECTED"
+            fi
+          done
+
+          # Write summary footer
+          {
+            echo ""
+            echo "---"
+            echo "**Total:** $TOTAL &nbsp;|&nbsp; ✅ Passed: $PASS &nbsp;|&nbsp; ❌ Failed: $FAIL"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo ""
+          echo "Eval run complete: $PASS/$TOTAL passed."
+
+          # Fail the job if any entry failed validation
+          if [ "$FAIL" -gt 0 ]; then
+            echo "::error::$FAIL eval entr$([ $FAIL -eq 1 ] && echo 'y' || echo 'ies') failed."
+            exit 1
+          fi
