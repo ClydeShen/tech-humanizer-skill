@@ -1,187 +1,231 @@
-[
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text: 'This project stands as a testament to human ingenuity, representing a pivotal moment in the history of software development. Experts argue that its enduring legacy will continue to underscore its importance for years to come.'",
-    "expected_behavior": "The humanized output contains none of the following AI marker vocabulary: 'stands as a testament', 'pivotal moment', 'Experts argue', 'enduring legacy', 'underscore'. The output replaces these with specific, concrete language. [Feature: tech-humanizer-skill, Property 1: Humanize output contains zero AI markers]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text: 'This robust framework delves into the intricate interplay between performance and reliability, showcasing a meticulous approach that is crucial for fostering a vibrant developer ecosystem.'",
-    "expected_behavior": "The humanized output contains none of the following AI vocabulary: 'robust', 'delves', 'intricate', 'interplay', 'showcasing', 'meticulous', 'crucial', 'fostering', 'vibrant'. Each is replaced with specific, concrete language. [Feature: tech-humanizer-skill, Property 1: Humanize output contains zero AI markers]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text: 'The System uses Advanced Algorithms to Process Data — delivering Fast, Reliable, and Scalable Infrastructure — making it the **Best** choice for **Modern** applications.'",
-    "expected_behavior": "The humanized output removes Title Case from non-proper nouns, removes excessive bold from non-keywords, and replaces em-dash overuse with appropriate punctuation. None of the style-layer AI markers remain. [Feature: tech-humanizer-skill, Property 1: Humanize output contains zero AI markers]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text: 'Certainly! I hope this helps clarify the deployment process. As of my last knowledge update, the recommended approach is to use blue-green deployments. Would you like me to explain the rollback procedure? Is there anything else I can help you with?'",
-    "expected_behavior": "The humanized output removes all collaborative/assistant language: 'Certainly!', 'I hope this helps', 'As of my last knowledge update', 'Would you like me to explain', 'Is there anything else I can help you with'. The output retains only the substantive content about deployment. [Feature: tech-humanizer-skill, Property 1: Humanize output contains zero AI markers]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text: 'This robust solution leverages microservices architecture with CI/CD pipelines to achieve low latency and high throughput, showcasing a meticulous approach to canary deployment.'",
-    "expected_behavior": "The humanized output preserves all technical terms verbatim: 'microservices', 'CI/CD', 'pipelines', 'latency', 'throughput', 'canary deployment'. AI markers ('robust', 'showcasing', 'meticulous') are removed, but technical terms appear unchanged in the output. [Feature: tech-humanizer-skill, Property 2: Technical terms are preserved through humanization]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text: 'The intricate ETL pipeline transforms data through a robust schema validation process, highlighting the crucial role of data warehousing in modern analytics.'",
-    "expected_behavior": "The humanized output preserves 'ETL', 'pipeline', 'schema', 'data warehousing' verbatim. AI markers ('intricate', 'robust', 'highlighting', 'crucial') are removed. [Feature: tech-humanizer-skill, Property 2: Technical terms are preserved through humanization]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text: 'This groundbreaking zero-trust architecture bolsters security by leveraging OAuth 2.0 and JWT tokens, showcasing a meticulous approach to identity management.'",
-    "expected_behavior": "The humanized output preserves 'zero-trust', 'OAuth 2.0', 'JWT' verbatim. AI markers ('groundbreaking', 'bolsters', 'showcasing', 'meticulous') are removed. [Feature: tech-humanizer-skill, Property 2: Technical terms are preserved through humanization]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Detect AI markers in this text: 'The API returns a 200 status code when the request succeeds. If the token is expired, it returns 401. Retry after refreshing the token.'",
-    "expected_behavior": "The reported AI marker density is 0%. The output states no AI writing markers were detected and lists the four dimensions checked (content, language, style, communication intent). The density value is an integer in [0, 100]. [Feature: tech-humanizer-skill, Property 3: AI marker density is a valid integer in [0, 100]]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Detect AI markers in this text: 'The deployment pipeline runs every 15 minutes. This robust system delves into the intricate details of container orchestration. The rollback takes under 30 seconds. It is crucial to monitor latency after each deploy.'",
-    "expected_behavior": "The reported AI marker density is an integer between 25 and 75 (approximately 50%). The density value is a whole number in [0, 100], calculated as floor((sentences_with_markers / total_sentences) * 100). [Feature: tech-humanizer-skill, Property 3: AI marker density is a valid integer in [0, 100]]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Detect AI markers in this text: 'Certainly! This robust framework stands as a testament to meticulous engineering. It delves into the intricate interplay of pivotal components, showcasing a vibrant ecosystem. Experts argue this groundbreaking approach will underscore its enduring legacy. I hope this helps clarify the landscape.'",
-    "expected_behavior": "The reported AI marker density is an integer between 80 and 100 (approximately 100%). Every sentence contains at least one AI marker. The density value is a whole number in [0, 100]. [Feature: tech-humanizer-skill, Property 3: AI marker density is a valid integer in [0, 100]]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Detect AI markers in this text: 'Certainly! This robust system stands as a testament to innovation. The **Key** Features include Fast, Reliable, and Scalable performance. As of my last knowledge update, experts argue this is groundbreaking.'",
-    "expected_behavior": "The detect output contains all four category sections: Content, Language, Style, and Communication Intent — regardless of whether each has markers. Each section is present and labelled. [Feature: tech-humanizer-skill, Property 4: Detect output is grouped into all four marker dimensions]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Detect AI markers in this text: 'The build takes 4 minutes. Tests run in parallel across 8 workers. The deploy script pushes to staging first, then production after a 5-minute health check.'",
-    "expected_behavior": "The detect output reports 0% density and still contains all four category sections (Content, Language, Style, Communication Intent), each showing 0 instances. The output states no markers were found and lists the four dimensions checked. [Feature: tech-humanizer-skill, Property 4: Detect output is grouped into all four marker dimensions]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Detect AI markers in this text: 'Certainly! I hope this helps. Would you like me to explain further? Is there anything else I can help you with?'",
-    "expected_behavior": "The detect output identifies markers in the Communication Intent category and provides at least one improvement suggestion for that category. Each suggestion includes: the original fragment, a problem description, and a rewrite example. [Feature: tech-humanizer-skill, Property 5: Each detected marker category has at least one improvement suggestion]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Detect AI markers in this text: 'This robust framework delves into the intricate details of the system. The **Key** Features are Bold and Important for all users.'",
-    "expected_behavior": "The detect output identifies markers in at least 2 categories (Language and Style) and provides at least one improvement suggestion per detected category. Each suggestion includes the original fragment, problem description, and rewrite example. [Feature: tech-humanizer-skill, Property 5: Each detected marker category has at least one improvement suggestion]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Detect AI markers in this text: 'Certainly! This robust system stands as a testament to innovation. The **Key** Features include Fast, Reliable, and Scalable performance. As of my last knowledge update, experts argue this is groundbreaking.'",
-    "expected_behavior": "The detect output identifies markers in all 4 categories (Content, Language, Style, Communication Intent) and provides at least one improvement suggestion per category — 4 suggestions minimum. Each suggestion includes the original fragment, problem description, and rewrite example. [Feature: tech-humanizer-skill, Property 5: Each detected marker category has at least one improvement suggestion]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "My writing profile has one preference: {'original': 'utilize', 'preferred': 'use'}. Now humanize this text: 'We should utilize this robust framework to enhance our pipeline and utilize the available resources.'",
-    "expected_behavior": "The humanized output does not contain the word 'utilize'. It is replaced with 'use' in all occurrences. AI markers ('robust', 'enhance') are also removed. [Feature: tech-humanizer-skill, Property 6: Writing profile preferences are applied in every subsequent humanization]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "My writing profile has two preferences: {'original': 'leverage', 'preferred': 'use'} and {'original': 'utilize', 'preferred': 'use'}. Humanize this text: 'We leverage microservices to utilize the available compute resources and enhance throughput.'",
-    "expected_behavior": "The humanized output contains neither 'leverage' nor 'utilize'. Both are replaced with 'use'. Technical terms 'microservices' and 'throughput' are preserved. [Feature: tech-humanizer-skill, Property 6: Writing profile preferences are applied in every subsequent humanization]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "My writing profile has a domain term: {'term': 'canary deployment', 'context': 'our team uses this instead of gradual rollout'}. Humanize this text: 'We use a gradual rollout strategy to reduce risk during releases.'",
-    "expected_behavior": "The humanized output uses 'canary deployment' instead of 'gradual rollout', reflecting the domain term preference from the writing profile. [Feature: tech-humanizer-skill, Property 6: Writing profile preferences are applied in every subsequent humanization]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text: 'The system was deployed by the team.' (Note: passive voice appears once in this text.)",
-    "expected_behavior": "The humanized output rewrites the passive construction. The L1 pattern (passive voice) is NOT recorded to l1_patterns because it appears only once. No l1_patterns entry is created. [Feature: tech-humanizer-skill, Property 7: L1 transfer patterns are recorded only when they appear ≥2 times]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text: 'The feature was implemented by the developer. The tests were written by the QA team. The deployment was completed by the ops team.'",
-    "expected_behavior": "The humanized output rewrites the passive constructions. The L1 pattern (passive voice / over-use of passive constructions) IS silently recorded to l1_patterns because it appears 3 times (≥2). The recording is silent — no mention of the inference is shown to the user. [Feature: tech-humanizer-skill, Property 7: L1 transfer patterns are recorded only when they appear ≥2 times]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "My writing profile has 1 preference entry: {'original': 'utilize', 'preferred': 'use'}. Reset my writing profile.",
-    "expected_behavior": "The writing profile is cleared. The confirmation message states '写作档案已清空，共删除 1 条记录' (exactly 1 record deleted). The profile is now empty. [Feature: tech-humanizer-skill, Property 8: Writing profile reset clears all entries and reports the correct count]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "My writing profile has 3 entries: 2 preferences and 1 domain term. Reset my writing profile.",
-    "expected_behavior": "The writing profile is cleared. The confirmation message states '写作档案已清空，共删除 3 条记录' (exactly 3 records deleted). The profile is now empty. [Feature: tech-humanizer-skill, Property 8: Writing profile reset clears all entries and reports the correct count]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "I have added 50 preference corrections to my writing profile (entries 1 through 50, oldest first). Now I add a 51st correction: {'original': 'synergize', 'preferred': 'work together'}. Show my writing profile.",
-    "expected_behavior": "The writing profile contains exactly 50 entries. The oldest entry (entry 1) has been evicted. Entry 51 ('synergize' → 'work together') is present. The user was notified before the addition: '写作档案已达上限（50 条），新记录将替换最早添加的条目'. [Feature: tech-humanizer-skill, Property 9: Writing profile FIFO eviction maintains the 50-entry cap]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "I answered the profile assessment questions as follows: Q1=A, Q2=A, Q3=A. What is my profile?",
-    "expected_behavior": "The saved profile.json contains: english_variant='British' (Q1-A contains 'customised'), cefr_level='C1' (all A), style_by_context={client_docs='formal', team_collab='formal', casual_chat='formal'}. [Feature: tech-humanizer-skill, Property 10: Profile inference is deterministic for all 27 answer combinations]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "I answered the profile assessment questions as follows: Q1=B, Q2=B, Q3=B. What is my profile?",
-    "expected_behavior": "The saved profile.json contains: english_variant='American' (no British signals), cefr_level='B1' (all B), style_by_context={client_docs='semi-formal', team_collab='informal', casual_chat='informal'}. [Feature: tech-humanizer-skill, Property 10: Profile inference is deterministic for all 27 answer combinations]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "I answered the profile assessment questions as follows: Q1=C, Q2=C, Q3=C. What is my profile?",
-    "expected_behavior": "The saved profile.json contains: english_variant='American' (no British signals in C options), cefr_level='B1' (all C), style_by_context={client_docs='informal', team_collab='informal', casual_chat='casual'}. [Feature: tech-humanizer-skill, Property 10: Profile inference is deterministic for all 27 answer combinations]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "I answered the profile assessment questions as follows: Q1=A, Q2=B, Q3=C. What is my profile?",
-    "expected_behavior": "The saved profile.json contains: english_variant='British' (Q1-A contains 'customised'), cefr_level='B2' (two A equivalent: one A, one B, one C — two non-B answers), style_by_context={client_docs='formal', team_collab='informal', casual_chat='casual'}. [Feature: tech-humanizer-skill, Property 10: Profile inference is deterministic for all 27 answer combinations]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Complete the profile assessment with answers Q1=A, Q2=A, Q3=A. Show the saved profile.json.",
-    "expected_behavior": "The saved profile.json is valid JSON containing all required fields: english_variant (value: 'British'), cefr_level (value: 'C1'), style_by_context with client_docs/team_collab/casual_chat sub-fields, answers with q1/q2/q3, created_at (UTC ISO 8601 timestamp), version (value: '1.0'). All values match the allowed enum types. [Feature: tech-humanizer-skill, Property 11: Saved profile.json conforms to the specified schema]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Complete the profile assessment with answers Q1=B, Q2=B, Q3=B. Show the saved profile.json.",
-    "expected_behavior": "The saved profile.json is valid JSON containing all required fields: english_variant (value: 'American'), cefr_level (value: 'B1'), style_by_context with client_docs='semi-formal', team_collab='informal', casual_chat='informal', answers with q1='B'/q2='B'/q3='B', created_at (UTC ISO 8601 timestamp), version='1.0'. [Feature: tech-humanizer-skill, Property 11: Saved profile.json conforms to the specified schema]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Skip all three profile assessment questions (press enter for each). Show the saved profile.json.",
-    "expected_behavior": "The saved profile.json uses default answer B for all three questions. It contains all required fields with valid enum values. The profile summary includes '(some defaults applied)'. The profile.json is valid JSON conforming to the schema. [Feature: tech-humanizer-skill, Property 11: Saved profile.json conforms to the specified schema]"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "profile.json does not exist. Humanize this email: 'Certainly! I hope this helps clarify our deployment process. Please let me know if you need anything else.'",
-    "expected_behavior": "Before humanizing, the skill presents Q1/Q2/Q3 assessment questions. After the user answers, it saves profile.json, displays the two-line profile summary, then humanizes the email removing 'Certainly!', 'I hope this helps', and 'Please let me know if you need anything else.'"
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this client report: 'Hey team! So basically the deploy went fine lol. Stuff is working now. Ping me if anything breaks.'",
-    "expected_behavior": "The humanized output uses formal register appropriate for client documentation. Casual language ('Hey team!', 'lol', 'Stuff', 'Ping me') is replaced with professional, direct language. The output matches the client_docs style from profile.json."
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Rewrite this for Slack: 'I am pleased to inform you that the deployment has been completed successfully. Please review your services at your earliest convenience and notify me of any anomalies.'",
-    "expected_behavior": "The humanized output uses casual/informal register appropriate for Slack. Formal language is replaced with direct, conversational language. AI markers ('I am pleased to inform you', 'at your earliest convenience', 'anomalies') are removed."
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text and explain the changes: 'This robust framework delves into the intricate interplay between performance and reliability, showcasing a meticulous approach.'",
-    "expected_behavior": "The output contains the rewritten text followed by a list of changes. Each change entry shows: original fragment → replacement → reason. At minimum: 'robust' → [replacement] → [reason], 'delves' → [replacement] → [reason], 'intricate interplay' → [replacement] → [reason], 'showcasing' → [replacement] → [reason], 'meticulous' → [replacement] → [reason]."
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Humanize this text: '   '",
-    "expected_behavior": "The skill returns the error message '输入文本不能为空，请提供需要改写的内容。' and does not perform any rewrite operation."
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "Detect AI markers in this document: ''",
-    "expected_behavior": "The skill returns the error message '输入文档为空，无法执行检测。' and does not output a detection report."
-  },
-  {
-    "skills": ["tech-humanizer"],
-    "query": "My writing profile has: preferences=[{'original':'utilize','preferred':'use'}], domain_terms=[{'term':'canary deployment','context':'our team term'}], l1_patterns=[{'pattern':'passive voice overuse'}]. Show my writing profile.",
-    "expected_behavior": "The output is a categorised list with three sections: (1) Preference corrections showing 'utilize → use', (2) Domain terms showing 'canary deployment (our team term)', (3) L1 patterns showing 'passive voice overuse'. The format is clear and human-readable."
-  }
-]
+{
+  "skill_name": "tech-humanizer-skill",
+  "version": "1.0.0",
+  "source_basis": [
+    "Wikipedia:Signs of AI writing",
+    "Claude Agent Skills best practices",
+    "skills-best-practices progressive disclosure guidance"
+  ],
+  "evals": [
+    {
+      "id": "humanize-legacy-and-attribution",
+      "covers": ["C1", "C2", "L1"],
+      "prompt": "Humanize this release-note paragraph: \"This launch stands as a testament to our engineering excellence. Experts argue that it represents a pivotal moment for the platform and underscores its enduring value.\"",
+      "expected_output": "A direct release-note paragraph with grand legacy claims and vague attribution removed or replaced by concrete product outcomes. The output must not contain the original marker phrases.",
+      "assertions": [
+        {
+          "name": "removes unsupported significance language",
+          "description": "Output does not contain 'stands as a testament', 'pivotal moment', 'underscores', or 'enduring value'."
+        },
+        {
+          "name": "removes vague attribution",
+          "description": "Output does not contain 'Experts argue' unless a named source is supplied."
+        }
+      ]
+    },
+    {
+      "id": "humanize-promotional-technical",
+      "covers": ["C3", "L1"],
+      "prompt": "Humanize this technical overview: \"Our groundbreaking platform boasts a vibrant developer ecosystem and cutting-edge observability features for Kubernetes workloads.\"",
+      "expected_output": "A neutral technical overview that preserves 'observability' and 'Kubernetes' while removing hype words such as groundbreaking, boasts, vibrant, and cutting-edge.",
+      "assertions": [
+        {
+          "name": "preserves technical terms",
+          "description": "Output keeps 'observability' and 'Kubernetes'."
+        },
+        {
+          "name": "removes promotional framing",
+          "description": "Output avoids 'groundbreaking', 'boasts', 'vibrant', and 'cutting-edge'."
+        }
+      ]
+    },
+    {
+      "id": "humanize-dangling-participles",
+      "covers": ["C4"],
+      "prompt": "Humanize this engineering update: \"The API now handles 12,000 requests per second, showcasing its robust architecture and highlighting the team's meticulous approach.\"",
+      "expected_output": "A concise engineering update that keeps the throughput claim and removes or rewrites the trailing participial commentary.",
+      "assertions": [
+        {
+          "name": "keeps factual metric",
+          "description": "Output retains the 12,000 requests per second fact."
+        },
+        {
+          "name": "removes trailing commentary",
+          "description": "Output does not contain 'showcasing', 'highlighting', 'robust', or 'meticulous'."
+        }
+      ]
+    },
+    {
+      "id": "humanize-template-openers",
+      "covers": ["C5", "I4"],
+      "prompt": "Rewrite this for a design doc: \"In today's fast-paced cloud landscape, it is important to note that the system faces challenges around retry behavior. This section will explore how retries work.\"",
+      "expected_output": "A design-doc paragraph that starts with the actual retry behavior or problem and removes landscape framing, meta-commentary, and filler hedging.",
+      "assertions": [
+        {
+          "name": "starts with substantive claim",
+          "description": "Output removes 'In today's fast-paced cloud landscape' and 'This section will explore'."
+        },
+        {
+          "name": "removes hedging",
+          "description": "Output removes 'it is important to note that'."
+        }
+      ]
+    },
+    {
+      "id": "humanize-elegant-variation",
+      "covers": ["C6"],
+      "prompt": "Humanize this text: \"The developer designed the schema. The software artisan then updated the data persistence repository and asked the keyboard wrangler to review it.\"",
+      "expected_output": "A natural technical rewrite that uses direct terms such as developer, database, and reviewer instead of artificial synonym variation.",
+      "assertions": [
+        {
+          "name": "normalizes artificial synonyms",
+          "description": "Output does not contain 'software artisan', 'data persistence repository', or 'keyboard wrangler'."
+        }
+      ]
+    },
+    {
+      "id": "humanize-copula-and-negative-parallel",
+      "covers": ["L2", "L3"],
+      "prompt": "Humanize this documentation sentence: \"This module serves as the primary adapter. Not only does it reduce latency, but it also improves throughput.\"",
+      "expected_output": "A direct documentation sentence using simpler verbs and a straightforward positive claim.",
+      "assertions": [
+        {
+          "name": "simplifies copula substitution",
+          "description": "Output replaces 'serves as' with a simpler construction such as 'is'."
+        },
+        {
+          "name": "collapses negative parallelism",
+          "description": "Output avoids 'Not only' and 'but also'."
+        }
+      ]
+    },
+    {
+      "id": "humanize-rule-of-three",
+      "covers": ["L4"],
+      "prompt": "Humanize this marketing-heavy product sentence for engineers: \"The tool provides a fast, reliable, and scalable solution that monitors, analyzes, and reports on pipeline health.\"",
+      "expected_output": "A concrete engineering sentence that keeps only meaningful properties or replaces the triple with specific behavior.",
+      "assertions": [
+        {
+          "name": "reduces padded triples",
+          "description": "Output avoids preserving both three-item lists unchanged unless each item is made concrete."
+        }
+      ]
+    },
+    {
+      "id": "humanize-formatting-markers",
+      "covers": ["S1", "S2", "S4"],
+      "prompt": "Humanize this message: \"The System uses Advanced Algorithms to Process Data — delivering **Fast**, **Reliable**, and **Scalable** Infrastructure — for Modern Applications.\"",
+      "expected_output": "A plain sentence with ordinary capitalization, no decorative bold, and no overused em dashes.",
+      "assertions": [
+        {
+          "name": "fixes capitalization",
+          "description": "Output lowercases ordinary words such as system, advanced algorithms, process data, infrastructure, and modern applications."
+        },
+        {
+          "name": "removes decorative formatting",
+          "description": "Output removes unnecessary bold and repeated em dashes."
+        }
+      ]
+    },
+    {
+      "id": "humanize-inline-header-list",
+      "covers": ["S3"],
+      "prompt": "Humanize this Markdown:\n- **Scalability**: The service handles more traffic.\n- **Reliability**: The service retries failed calls.\n- **Security**: The service validates tokens.",
+      "expected_output": "A more natural paragraph, plain list, or table without the rigid three-item bold-label pattern.",
+      "assertions": [
+        {
+          "name": "removes rigid inline headers",
+          "description": "Output does not keep three consecutive bullets in the pattern '- **Label**: description'."
+        }
+      ]
+    },
+    {
+      "id": "humanize-heading-and-breaks",
+      "covers": ["S6", "S7"],
+      "prompt": "Humanize this Markdown document:\n# Setup\n\n---\n\n### Install the CLI\nRun npm install.",
+      "expected_output": "A Markdown document with no redundant thematic break before the heading and a corrected heading sequence.",
+      "assertions": [
+        {
+          "name": "fixes skipped heading level",
+          "description": "Output changes the subheading to '## Install the CLI' or otherwise avoids jumping from H1 to H3."
+        },
+        {
+          "name": "removes break before heading",
+          "description": "Output removes the thematic break immediately before the heading."
+        }
+      ]
+    },
+    {
+      "id": "humanize-reference-leaks",
+      "covers": ["S8"],
+      "prompt": "Humanize this sentence: \"As detailed in turn0search0, the endpoint is deprecated oaicite:1. Please refer to contentReference:2 for details.\"",
+      "expected_output": "A natural sentence with internal reference tokens removed and no fake citation syntax left behind.",
+      "assertions": [
+        {
+          "name": "strips citation leaks",
+          "description": "Output does not contain 'turn0search0', 'oaicite', or 'contentReference'."
+        }
+      ]
+    },
+    {
+      "id": "humanize-assistant-language",
+      "covers": ["I1", "I2"],
+      "prompt": "Rewrite this deployment note as a teammate: \"Certainly! As of my last knowledge update, blue-green deployment is recommended. I hope this helps. Is there anything else I can help you with?\"",
+      "expected_output": "A teammate-style deployment note with service language and knowledge-cutoff disclaimers removed.",
+      "assertions": [
+        {
+          "name": "removes assistant stance",
+          "description": "Output removes 'Certainly!', 'I hope this helps', and closing help offers."
+        },
+        {
+          "name": "removes knowledge cutoff",
+          "description": "Output removes 'As of my last knowledge update'."
+        }
+      ]
+    },
+    {
+      "id": "humanize-placeholder-residue",
+      "covers": ["I3"],
+      "prompt": "Humanize this email draft: \"Hi [Recipient Name], please review [Project Name] by [Date]. Note: Replace this with your actual deadline.\"",
+      "expected_output": "A draft that removes placeholder residue. If the actual values are unknown, it should ask for or omit them rather than keeping bracketed placeholders.",
+      "assertions": [
+        {
+          "name": "does not keep placeholders",
+          "description": "Output does not contain '[Recipient Name]', '[Project Name]', '[Date]', or 'Replace this'."
+        }
+      ]
+    },
+    {
+      "id": "detect-density-by-sentence",
+      "covers": ["C1", "C3", "I1", "I4"],
+      "prompt": "Detect AI writing markers in this text: \"The API returns 200 when the request succeeds. This robust system stands as a testament to engineering excellence. Please note that retries run after token refresh. Certainly! I hope this helps.\"",
+      "expected_output": "A detection report with AI marker density of 75% using floor(marked sentences / total sentences * 100), grouped into all four dimensions with concrete suggestions.",
+      "assertions": [
+        {
+          "name": "reports integer density",
+          "description": "Output reports an integer AI marker density in the range 0-100."
+        },
+        {
+          "name": "groups findings",
+          "description": "Output includes Content, Language, Style and formatting, and Communication intent sections."
+        }
+      ]
+    },
+    {
+      "id": "profile-preference-application",
+      "covers": ["PROFILE"],
+      "prompt": "My writing profile says: prefer 'use' over 'utilize' and prefer 'canary deployment' over 'gradual rollout'. Humanize this: \"We utilize a gradual rollout to enhance release safety.\"",
+      "expected_output": "A rewritten sentence that applies the user's saved preferences while removing generic AI vocabulary.",
+      "assertions": [
+        {
+          "name": "applies wording preferences",
+          "description": "Output uses 'use' instead of 'utilize' and 'canary deployment' instead of 'gradual rollout'."
+        },
+        {
+          "name": "removes vague enhancement verb",
+          "description": "Output avoids 'enhance' unless it is replaced with a specific improvement."
+        }
+      ]
+    }
+  ]
+}

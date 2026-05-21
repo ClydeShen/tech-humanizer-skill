@@ -1,20 +1,20 @@
 # Technical Terminology Whitelist
 
-## Lookup Rule
+Use this file before flagging vocabulary as AI-shaped. A term listed here is protected when it is used in its normal technical context.
 
-Any term listed in this file is **exempt from AI marker classification**, even if it also appears in `rules/ai-markers.md`. Before flagging a candidate word as an AI writing marker, check this whitelist first. If the word is present here, do not flag it — regardless of whether it matches a pattern in the AI marker rule library.
+Protection means:
 
----
+- Do not rewrite the term for style.
+- Do not count it as an AI marker by itself.
+- Preserve capitalization, punctuation, and spacing unless the user asks for a house-style change.
 
-## Infrastructure
-
-Terms related to systems architecture, deployment, and operations:
+## Infrastructure and Operations
 
 - API
 - microservices
 - monolith
 - CI/CD
-- pipeline (in the context of build/deploy pipelines)
+- pipeline
 - latency
 - throughput
 - canary deployment
@@ -33,8 +33,6 @@ Terms related to systems architecture, deployment, and operations:
 - node
 - orchestration
 - autoscaling
-- horizontal scaling
-- vertical scaling
 - CDN
 - DNS
 - TLS
@@ -50,7 +48,6 @@ Terms related to systems architecture, deployment, and operations:
 - circuit breaker
 - retry logic
 - idempotency
-- eventual consistency
 - distributed tracing
 - observability
 - telemetry
@@ -63,27 +60,22 @@ Terms related to systems architecture, deployment, and operations:
 - disaster recovery
 - RTO
 - RPO
-- on-premise
 - cloud-native
 - serverless
 - edge computing
-- IaC (Infrastructure as Code)
+- IaC
 - Terraform
 - Ansible
 - Helm
 - GitOps
 
----
-
 ## Data
 
-Terms related to data engineering, storage, and processing:
-
 - schema
-- pipeline (in the context of data pipelines)
 - ETL
 - ELT
 - data warehouse
+- data warehousing
 - data lake
 - data lakehouse
 - OLAP
@@ -102,7 +94,6 @@ Terms related to data engineering, storage, and processing:
 - transaction
 - ACID
 - CAP theorem
-- eventual consistency
 - message queue
 - event streaming
 - Kafka
@@ -119,21 +110,15 @@ Terms related to data engineering, storage, and processing:
 - foreign key
 - primary key
 - stored procedure
-- view (database)
 - materialized view
 
----
-
 ## Security
-
-Terms related to authentication, authorization, and security practices:
 
 - OAuth
 - OAuth 2.0
 - JWT
 - JSON Web Token
 - zero-trust
-- zero-trust architecture
 - RBAC
 - ABAC
 - ACL
@@ -145,16 +130,13 @@ Terms related to authentication, authorization, and security practices:
 - 2FA
 - TOTP
 - API key
-- secret
 - secret rotation
 - encryption
 - decryption
 - hashing
-- salt
 - bcrypt
 - AES
 - RSA
-- TLS (see also Infrastructure)
 - mTLS
 - certificate
 - PKI
@@ -163,31 +145,24 @@ Terms related to authentication, authorization, and security practices:
 - SQL injection
 - OWASP
 - penetration testing
-- pen test
-- vulnerability
 - CVE
-- patch
 - firewall
 - WAF
 - DDoS
 - intrusion detection
 - SIEM
 - audit log
-- compliance
 - GDPR
 - SOC 2
 - ISO 27001
 
----
-
 ## Software Engineering
-
-Terms related to development practices, patterns, and tooling:
 
 - refactor
 - refactoring
 - code review
-- PR (pull request)
+- PR
+- pull request
 - merge request
 - branch
 - commit
@@ -253,11 +228,7 @@ Terms related to development practices, patterns, and tooling:
 - profiler
 - benchmark
 
----
-
-## AI / ML
-
-Terms related to machine learning and AI systems:
+## AI and Machine Learning
 
 - model
 - training
@@ -267,10 +238,11 @@ Terms related to machine learning and AI systems:
 - prompt engineering
 - token
 - tokenizer
-- embedding (see also Data)
+- embedding
 - vector
 - cosine similarity
-- RAG (Retrieval-Augmented Generation)
+- RAG
+- Retrieval-Augmented Generation
 - LLM
 - transformer
 - attention mechanism
@@ -284,13 +256,11 @@ Terms related to machine learning and AI systems:
 - gradient descent
 - backpropagation
 - neural network
-- convolutional neural network
 - CNN
 - RNN
 - LSTM
 - diffusion model
 - generative model
-- discriminative model
 - classification
 - regression
 - clustering
@@ -304,14 +274,12 @@ Terms related to machine learning and AI systems:
 - ROC curve
 - confusion matrix
 - ground truth
-- label
 - annotation
 - dataset
-- benchmark (see also Software Engineering)
 - RLHF
 - alignment
 - hallucination
 - context window
-- temperature (model parameter)
+- temperature
 - top-p
 - top-k

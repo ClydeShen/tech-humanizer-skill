@@ -1,103 +1,139 @@
 # tech-humanizer-skill
 
-An Agent Skill that rewrites AI-generated text into natural, human-sounding prose while preserving technical terminology and jargon.
+[![skills.sh](https://skills.sh/b/ClydeShen/tech-humanizer-skill)](https://skills.sh/ClydeShen/tech-humanizer-skill)
+[![Validate Skill](https://github.com/ClydeShen/tech-humanizer-skill/actions/workflows/evals.yml/badge.svg)](https://github.com/ClydeShen/tech-humanizer-skill/actions/workflows/evals.yml)
 
-## Installation
+An Agent Skill for rewriting AI-shaped prose into natural human writing while preserving technical terminology.
 
-### Prerequisites
+It supports documents, emails, chat messages, pull request text, release notes, and technical docs. It can also detect AI-writing marker density and maintain a local writing profile so future rewrites move closer to the user's own wording.
 
-- [Node.js](https://nodejs.org/) v18 or later
-- An agent tool that supports the [Agent Skills Specification](https://skills.sh) (see supported tools below)
-
-### Install
+## Install
 
 ```bash
 npx skills add ClydeShen/tech-humanizer-skill
 ```
 
-Run this command in your project directory. The skill will be installed and available to any supported agent tool running in that directory.
+Run the command in the project where you want the skill installed. The repository keeps `SKILL.md` at the root so it can be discovered by `skills.sh` and by agent clients that support the Agent Skills layout.
 
-### Supported Agent Tools
+## Supported Agent Tools
+
+The skill uses plain Markdown instructions and local reference files, so it is intended to work across mainstream agent environments:
 
 - Claude Desktop
 - Claude Code
 - Codex
 - Gemini CLI
 - Kiro
+- Other agents that can load a `SKILL.md` skill folder
 
-## Features
-
-### Humanize
-
-Rewrites AI-style text into natural, human-sounding prose. The skill identifies and removes AI writing markers — overused vocabulary, collaborative filler phrases, templated structures, and excessive formatting — while preserving all technical terms and jargon exactly as written.
-
-### Detect
-
-Scans text for AI writing markers across four dimensions: content (vague attribution, promotional language), language (high-density AI vocabulary, negative parallel structures), style (title case, excessive bold, inline header lists), and communication intent (collaborative filler, knowledge cutoff disclaimers). Outputs an AI marker density report showing the percentage of sentences containing markers, grouped by category with specific instances and improvement suggestions.
-
-### Profile Management
-
-On first use, the skill runs a short 3-question assessment to infer your English variant (British/American), CEFR level (B1–C1), and style preferences across three contexts (client docs, team collaboration, casual chat). The profile is saved locally and applied automatically to all subsequent rewrites. You can view, update, or reset your profile at any time.
-
----
-
-## Usage
+## What It Does
 
 ### Humanize
 
-```
-Humanize this email: [paste text]
-```
+Rewrites AI-style text into direct, context-aware prose. It removes patterns such as grand importance claims, vague attribution, promotional vocabulary, assistant service language, template residue, excessive formatting, skipped Markdown heading levels, and internal citation leaks.
 
-```
-Rewrite this for a Slack message: [paste text]
-```
-
-```
-Humanize this pull request description: [paste text]
-```
+Technical terms are preserved by default. For example, terms such as `Kubernetes`, `OAuth 2.0`, `JWT`, `CI/CD`, `RAG`, `schema`, `latency`, and `canary deployment` should stay intact unless the user explicitly asks for a house-style change.
 
 ### Detect
 
-```
-Detect AI markers in this document: [paste text]
-```
+Reports AI-marker density as:
 
-```
-What's the AI marker density of this text? [paste text]
+```text
+floor(sentences_with_markers / total_sentences * 100)
 ```
 
-### Profile
+Findings are grouped into:
 
+- Content
+- Language
+- Style and formatting
+- Communication intent
+
+Each non-empty group includes specific fragments, the issue, and a rewrite example.
+
+### Learn User Style
+
+The skill can maintain a local `writing-profile.json` with:
+
+- preferred wording corrections;
+- domain terms;
+- style notes from user samples;
+- recurring writing patterns the user wants corrected.
+
+The profile file is ignored by Git by default.
+
+## Repository Structure
+
+```text
+.
+|-- SKILL.md
+|-- references/
+|   |-- ai-markers.md
+|   |-- technical-terms.md
+|   `-- profile-schema.md
+|-- assets/
+|   `-- detection-report-template.txt
+|-- scripts/
+|   `-- validate.py
+|-- evals.json
+|-- .github/
+|   |-- workflows/evals.yml
+|   |-- ISSUE_TEMPLATE/
+|   `-- PULL_REQUEST_TEMPLATE.md
+`-- package.json
 ```
-Show my writing profile
+
+`SKILL.md` is intentionally short. Detailed marker rules live in `references/` and are loaded only when needed.
+
+## Validate Locally
+
+```bash
+npm run validate
 ```
 
-```
-Update my profile
-```
+or:
 
-```
-Reset writing profile
+```bash
+python scripts/validate.py
 ```
 
-```
-Clear my writing profile
-```
+The validation checks:
 
----
+- `SKILL.md` frontmatter;
+- skill length and required references;
+- AI-marker reference coverage;
+- `evals.json` schema and marker coverage.
 
-## Configuration
+## Evaluation Set
 
-Two files are auto-generated in your working directory when you use the skill:
+`evals.json` contains regression prompts for:
 
-- `profile.json` — stores your inferred user persona (English variant, CEFR level, style preferences)
-- `writing-profile.json` — stores your accumulated writing preferences, vocabulary corrections, and observed L1 transfer patterns
+- marker removal;
+- technical-term preservation;
+- AI-marker density reporting;
+- style/profile behavior;
+- Markdown formatting cleanup;
+- citation/reference leak removal.
 
-Both files are listed in `.gitignore` and are excluded from version control by default. You do not need to create or edit them manually.
+The CI workflow validates that eval coverage stays aligned with the marker reference.
 
----
+## Sources and Design Basis
+
+This skill is based on:
+
+- [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)
+- [Claude Agent Skills best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+- [skills-best-practices](https://github.com/mgechev/skills-best-practices)
+- [skills.sh docs](https://www.skills.sh/docs)
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). New AI-writing markers should update both `references/ai-markers.md` and `evals.json`.
+
+## Security
+
+See [SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+MIT. See [LICENSE](LICENSE).
