@@ -10,6 +10,16 @@ Create or update this file only when the user:
 - provides writing samples to imitate;
 - mentions domain terminology that should be preserved or preferred.
 
+### Syntactic DNA sourcing rules
+
+`syntactic_dna` entries are written under stricter conditions than other profile fields:
+
+- **Valid sources:** explicit writing samples the user flags as their own work, and corrections the user makes to skill output.
+- **Invalid source:** text the user submits for humanization. That text may be AI-generated and cannot be used as style evidence.
+- **Commit threshold:** write an observation to `syntactic_dna` only after 3 independent session observations agree on the same pattern. Do not write after a single session.
+- **Format:** descriptive prose observations, not numeric measurements. "Leads with a short declarative sentence, then follows with a longer explanation" not "avg sentence length: 14 words."
+- **Scope:** `syntactic_dna` governs rhythm (sentence length variation, punctuation habits, pacing). It does not override Senior Engineer Voice content decisions.
+
 ## Schema
 
 ```json
@@ -44,7 +54,14 @@ Create or update this file only when the user:
       "observed_at": "2026-05-22T00:00:00Z"
     }
   ],
-  "version": "1.0"
+  "syntactic_dna": [
+    {
+      "observation": "Leads with a short declarative sentence, then follows with a longer explanatory sentence.",
+      "evidence": "Observed across 3 writing samples provided on 2026-05-22.",
+      "added_at": "2026-05-22T00:00:00Z"
+    }
+  ],
+  "version": "2.0"
 }
 ```
 
@@ -54,6 +71,7 @@ Create or update this file only when the user:
 - `domain_terms`: keep the newest 100 entries.
 - `style_notes`: keep the newest 25 entries.
 - `recurring_patterns`: keep the newest 25 entries.
+- `syntactic_dna`: keep the newest 20 entries.
 
 When a visible user preference or domain term is evicted, mention it briefly. Silent inferred pattern eviction does not need a message.
 
