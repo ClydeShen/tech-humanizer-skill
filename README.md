@@ -1,132 +1,99 @@
-# tech-humanizer-skill
+# ✍️ tech-humanizer-skill
 
-[![skills.sh](https://skills.sh/b/ClydeShen/tech-humanizer-skill)](https://skills.sh/ClydeShen/tech-humanizer-skill)
-[![Validate Skill](https://github.com/ClydeShen/tech-humanizer-skill/actions/workflows/evals.yml/badge.svg)](https://github.com/ClydeShen/tech-humanizer-skill/actions/workflows/evals.yml)
+[![skills.sh](https://img.shields.io/badge/skills.sh-ClydeShen%2Ftech--humanizer--skill-blue?style=flat-square)](https://skills.sh/ClydeShen/tech-humanizer-skill)
+[![Validate Skill](https://img.shields.io/github/actions/workflow/status/ClydeShen/tech-humanizer-skill/evals.yml?branch=main&label=Build&style=flat-square)](https://github.com/ClydeShen/tech-humanizer-skill/actions/workflows/evals.yml)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
+[![Compatible with Claude Code](https://img.shields.io/badge/Compatible-Claude%20Code-7C4DFF?style=flat-square)](#supported-agent-tools)
+[![Compatible with Gemini CLI](https://img.shields.io/badge/Compatible-Gemini%20CLI-4285F4?style=flat-square)](#supported-agent-tools)
 
-An Agent Skill for rewriting AI-shaped prose into natural human writing while preserving technical terminology. Based on [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing).
+### **High-Signal Technical Writing. No AI Fluff.**
 
-It supports documents, emails, chat messages, pull request text, release notes, and technical docs. It can also detect AI-writing marker density and maintain a local writing profile so future rewrites move closer to the user's own wording.
+Stop shipping PRs and docs that sound like they were written by a generic assistant. **tech-humanizer-skill** is an agent-side tool designed to purge AI-writing markers (ceremonial framing, vague claims, and promotional filler) while rigorously protecting the technical precision engineers actually care about.
 
-## Install
+It doesn't just "rewrite" text; it recalibrates your technical communication for the right channel—whether that's a high-signal Slack update or a formal engineering design doc.
 
+---
+
+## 🛠️ Why this matters
+
+*   **🛡️ Protects Technical Depth:** Automatically shields terms like `Kubernetes`, `OAuth 2.0`, `JWT`, and `CI/CD` from being "simplified" into meaningless fluff.
+*   **🧠 Grounded in Methodology:** Uses a community-driven field guide (based on [Wikipedia's AI markers](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)) to identify and fix specific "tells."
+*   **📈 Learns Your Voice:** Maintains a local `writing-profile.json` that tracks your team's nomenclature and your personal style preferences. No black boxes.
+*   **🎯 Context Aware:** Understands that a PR description needs impact, a Slack message needs brevity, and a technical doc needs precision.
+
+---
+
+## ✨ Before & After: Real Engineering Scenarios
+
+| **Context** | **Generic AI Output** | **Humanized Output** |
+| :--- | :--- | :--- |
+| **Engineering (PR)** | "This pull request encompasses a comprehensive refactoring of the authentication module to enhance security posture." | "Refactored the auth module to fix a potential session hijacking vulnerability." |
+| **Product (Release Notes)** | "We are excited to unveil a plethora of new features designed to empower your workflow and drive synergy." | "We've added bulk-editing and a new dashboard to speed up your daily tasks." |
+| **Architecture Doc** | "It is important to note that our innovative solution leverages Kubernetes to optimize scalability and ensure high availability." | "We use Kubernetes to handle scaling and keep the service up during traffic spikes." |
+| **On-call / Chat** | "I am reaching out to inform you that I have completed the requested investigation into the latency issues." | "Found the cause of the latency spikes. It was a missing index on the `users` table." |
+| **Email to Client** | "Please find the attached documentation for your perusal. Should you have any questions, feel free to reach out." | "I’ve attached the docs. Let me know if you have questions." |
+
+---
+
+## 👤 Who is this for?
+
+*   **Individual Contributors:** Keep your PRs high-signal and author-like.
+*   **Leads & Architects:** Ensure technical docs are precise and free of assistant-style "filler."
+*   **Product Owners:** Write release notes that actually tell users what changed.
+*   **Teams:** Standardize internal nomenclature via a shared writing profile.
+
+---
+
+## ⚙️ How it works
+
+1.  **Diagnostic Scan:** Identifies markers like "ceremonial framing" (e.g., "It is important to note") and "vague attribution" (e.g., "Many believe").
+2.  **Technical Shielding:** Cross-references with local lexicons to ensure protected terms stay verbatim.
+3.  **Recursive Check:** Re-evaluates the output against a professional rubric to ensure it sounds like a human wrote it, not just a "polished AI."
+
+---
+
+## 📦 Installation & Setup
+
+### **Add to your project**
 ```bash
 npx skills add ClydeShen/tech-humanizer-skill
 ```
 
-Run the command in the project where you want the skill installed. The repository keeps `SKILL.md` at the root so it can be discovered by `skills.sh` and by agent clients that support the Agent Skills layout.
-
-## Supported Agent Tools
-
-The skill uses plain Markdown instructions and local reference files, so it is intended to work across mainstream agent environments:
-
-- Claude Desktop
-- Claude Code
-- Codex
-- Gemini CLI
-- Kiro
-- Other agents that can load a `SKILL.md` skill folder
-
-## What It Does
-
-### Humanize
-
-Rewrites AI-style text into direct, context-aware prose. It removes patterns such as grand importance claims, vague attribution, promotional vocabulary, assistant service language, template residue, excessive formatting, skipped Markdown heading levels, and internal citation leaks.
-
-Technical terms are preserved by default. For example, terms such as `Kubernetes`, `OAuth 2.0`, `JWT`, `CI/CD`, `RAG`, `schema`, `latency`, and `canary deployment` should stay intact unless the user explicitly asks for a house-style change.
-
-### Detect
-
-Reports AI-marker density as:
-
-```text
-floor(sentences_with_markers / total_sentences * 100)
-```
-
-Findings are grouped into:
-
-- Content
-- Language
-- Style and formatting
-- Communication intent
-- Markup, citations, and sources
-- Comment-style residue
-
-Each non-empty group includes specific fragments, the issue, and a rewrite example.
-
-### Learn User Style
-
-The skill can maintain a local `writing-profile.json` with:
-
-- preferred wording corrections;
-- domain terms;
-- style notes from user samples;
-- recurring writing patterns the user wants corrected.
-
-The profile file is ignored by Git by default.
-
-## Repository Structure
-
-```text
-.
-|-- SKILL.md
-|-- references/
-|   |-- ai-markers.md
-|   |-- technical-terms.md
-|   |-- profile-schema.md
-|   |-- outcome/
-|   |   |-- rewrite-playbook.md
-|   |   |-- channel-style.md
-|   |   |-- source-and-markup-integrity.md
-|   |   `-- final-rubric.md
-|   `-- lexicons/
-|       `-- ai-style-lexicon.json
-|-- assets/
-|   `-- detection-report-template.txt
-|-- scripts/
-|   `-- validate.py
-|-- evals.json
-|-- .github/
-|   |-- workflows/evals.yml
-|   |-- ISSUE_TEMPLATE/
-|   `-- PULL_REQUEST_TEMPLATE.md
-`-- package.json
-```
-
-`SKILL.md` is intentionally short. Detailed marker rules and outcome guidance live in `references/` and are loaded only when needed.
-
-The reference layout separates:
-
-- `ai-markers.md`: diagnostic field guide based on Wikipedia's AI-writing signs.
-- `outcome/`: practical rewrite behavior, channel style, source/markup integrity, and final self-check rubric.
-- `lexicons/`: structured marker phrases for stricter lookup or future scripted scanning.
-
-## Validate Locally
-
+### **Update to the latest version**
 ```bash
-npm run validate
+npx skills update ClydeShen/tech-humanizer-skill
 ```
 
-or:
+---
 
-```bash
-python scripts/validate.py
-```
+## 🛠️ Supported Agent Tools
 
-The validation checks:
+This skill is a standard `SKILL.md` layout, compatible with:
 
-- `SKILL.md` frontmatter;
-- skill length and required references;
-- AI-marker reference coverage;
-- `evals.json` schema and marker coverage.
+*   **Claude Code** (Native support)
+*   **Gemini CLI** (Built-in integration)
+*   **Codex** & **Kiro**
+*   **Claude Desktop**
 
-## Contributing
+---
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). New AI-writing markers should update both `references/ai-markers.md` and `evals.json`.
+## 👤 The Writing Profile: Local & Transparent
 
-## Security
+Unlike "cloud" humanizers, this skill uses a local `writing-profile.json` in your project root. It’s private, ignored by Git, and allows you to:
 
-See [SECURITY.md](SECURITY.md).
+*   **Define Nomenclature:** "Always use *Registry*, never *Store*."
+*   **Store Samples:** Give the skill a few of your own sentences to match your register.
+*   **Internalize Corrections:** If you fix an AI word twice, the skill remembers never to use it again.
 
-## License
+---
 
-MIT. See [LICENSE](LICENSE).
+## 🔗 Project Links
+
+*   **[Contributing](CONTRIBUTING.md)** - Help us expand the AI-marker field guide.
+*   **[Code of Conduct](CODE_OF_CONDUCT.md)** - Standard community guidelines.
+*   **[Security](SECURITY.md)** - How we handle vulnerability reports.
+*   **[MIT License](LICENSE)** - Open-source and free.
+
+---
+<p align="center">Made with ❤️ for the Engineering Community</p>
