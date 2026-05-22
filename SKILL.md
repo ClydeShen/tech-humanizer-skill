@@ -1,7 +1,7 @@
 ---
 name: tech-humanizer-skill
 description: Use this skill when the user asks to humanize, rewrite, de-AI, polish, or detect AI writing in documents, emails, chat messages, pull request text, release notes, technical docs, or other prose. It removes AI-writing markers while preserving technical terminology, reports AI-marker density with concrete fixes, and learns the user's wording preferences, domain terms, and recurring writing habits over time.
-version: 1.0.0
+version: 2.0.0
 author: ClydeShen
 license: MIT
 ---
@@ -14,19 +14,21 @@ Use this skill for three jobs:
 
 - **Humanize**: rewrite documents, emails, messages, technical docs, PR descriptions, release notes, and similar prose.
 - **Detect**: estimate AI-marker density and give targeted rewrite suggestions.
-- **Learn style**: maintain a local writing profile for user preferences, domain terms, and recurring corrections.
+- **Learn style**: maintain a local writing profile for user preferences, domain terms, syntactic DNA, and recurring corrections.
 
 ## Load Order
 
 Read only what the task needs:
 
-- Humanizing or detection: read `references/ai-markers.md`.
+- Humanizing (RECURSE): read `references/bucket-quickref.md`.
+- Humanizing or detection (detail): read `references/ai-markers.md`.
 - Humanizing output: also read `references/outcome/rewrite-playbook.md` and `references/outcome/final-rubric.md`.
 - Channel-specific rewrites: read `references/outcome/channel-style.md`.
 - Text with citations, links, Markdown, HTML, wiki markup, or source claims: read `references/outcome/source-and-markup-integrity.md`.
 - Strict marker lookup or scripted scanning: read `references/lexicons/ai-style-lexicon.json`.
 - Technical or product text: also read `references/technical-terms.md`.
 - User asks about profile behavior or persistent learning: read `references/profile-schema.md`.
+- Terminology alignment: read `CONTEXT.md`.
 - Detection reports: use `assets/detection-report-template.txt` when the user needs a structured report.
 - Validating this skill as a repository maintainer: run `python scripts/validate.py`.
 
@@ -37,20 +39,45 @@ Read only what the task needs:
 - Prefer direct claims over ceremonial framing, vague attribution, generic importance claims, and assistant-style service language.
 - Match the target channel: a Slack message should sound different from a client report, release note, or engineering design doc.
 - Keep the user's intent and risk posture. Do not soften warnings, remove constraints, or alter commitments.
+- Prioritize authentic technical voice over detector evasion. Do not optimize for perplexity or burstiness scores.
 - If the input is already clean, say so and avoid unnecessary rewriting.
 
-## Humanize Workflow
+## Senior Engineer Voice
 
-1. Identify the target format and audience from the request: document, email, message, PR, release note, technical doc, or other.
-2. Load `references/ai-markers.md`, `references/outcome/rewrite-playbook.md`, and `references/outcome/final-rubric.md`.
-3. If the target channel is clear, load `references/outcome/channel-style.md`. If the text contains source claims, citations, links, Markdown, HTML, wiki markup, or retrieval tokens, load `references/outcome/source-and-markup-integrity.md`.
-4. If the text is technical, load `references/technical-terms.md` and treat those terms as protected.
-5. Load `writing-profile.json` from the current working directory if it exists. Apply explicit user preferences and domain terms before general style rules.
-6. Scan the text across the marker dimensions: content, language, style/formatting, communication intent, markup/citations/sources, and comment-style residue.
-7. Rewrite marked passages using concrete wording, simpler structure, and the user's register. Preserve evidence boundaries instead of making unsupported claims sound more confident.
-8. Preserve technical terminology and identifiers verbatim unless the profile says the user prefers a different term.
-9. Self-check the output with `references/outcome/final-rubric.md`. Revise again if any required gate fails.
-10. Return the rewritten text. If the user asked for an explanation, add a short change list after the rewrite.
+The positive target after humanization. Defines what to move toward, not only what to remove.
+
+- **Lead with the constraint, not the category.** Do not say "there are performance considerations." Say "this will timeout after 30s under load."
+- **Opinions without apology.** A senior engineer takes positions. "I would use Postgres here" not "one option is Postgres."
+- **Incomplete is fine when incomplete is true.** Leave open questions open. Do not resolve ambiguity the user did not resolve.
+- **Repetition over rotation.** Use the same precise term twice rather than inventing a synonym. "The cache" is always "the cache."
+- **Dry beats enthusiastic.** Understatement signals confidence. "This works" is stronger than "this is a powerful solution."
+
+Syntactic DNA governs rhythm (sentence length, punctuation habits, pacing). Senior Engineer Voice governs content decisions (what to lead with, claim scoping, position-taking). They operate on separate axes and do not conflict.
+
+## Humanize Workflow (STRIP -> PROTECT -> DRAFT -> RECURSE)
+
+1. **Identify** the target format and audience: document, email, message, PR, release note, technical doc, or other.
+2. **STRIP** -- Remove unconditionally on every pass: I1 (assistant service language), I2 (knowledge-cutoff disclaimers), I3 (placeholder residue), I4 ceremonial openers where they add no meaning, M1-M3 (markup leaks, broken citations, internal tokens). Also remove regardless of score: emoji (remove entirely), em dashes (replace with comma, colon, or parentheses), curly quotes (replace with straight ASCII quotes). See severity **High** in `references/ai-markers.md`.
+3. **PROTECT** -- Load `references/technical-terms.md` and `writing-profile.json` (including `syntactic_dna` when present). Lock protected terms and apply explicit preferences.
+4. **DRAFT** -- Rewrite with lead-fronting, active voice, and channel fit. Load `references/outcome/rewrite-playbook.md`, `references/outcome/final-rubric.md`, and `references/outcome/channel-style.md` when the channel is clear. Load `references/outcome/source-and-markup-integrity.md` when sources or markup matter.
+
+   **Voice (limited):** Vary sentence length; lead with facts or actions; prefer one concrete detail over abstract triples; use first person only when the channel and profile allow. Do not invent facts, metrics, or anecdotes.
+
+   **Claim Scoping:** When a claim meets all three conditions, narrow its logical scope (do not add hedging qualifiers): (1) uses absolute certainty language such as always, never, definitely, it is clear, universally; (2) no supporting evidence appears within 2 sentences; (3) the claim is empirical -- about measurable behavior or facts, not a stated design decision or preference. Design decisions and stated preferences are protected even without evidence.
+
+   - Before: "This approach always outperforms the naive implementation."
+   - After: "This approach outperformed the naive implementation in our load tests."
+
+   **Evidence gate:** Strengthen claims that have citations or supplied data. Delete filler hedging (it is important to note). Do not soften security warnings, legal qualifiers, or user-stated commitments.
+
+   **SNR guideline:** Aim for 15-25% word reduction in AI-padded technical drafts by removing preamble, restatement, and ceremonial hedging. Do not cut to hit a number. Every sentence earns its length.
+
+5. **RECURSE** -- Score with `references/bucket-quickref.md` using weighted points per detected marker: Structure 5 pts, Tone 2 pts, Vocabulary 2 pts, Formatting 1 pt. Refine surgically when:
+   - paragraph score >= 5 pts, or
+   - document score >= 12 pts.
+   Repair the highest-scoring bucket first. Maximum **3 passes**. Stop when below threshold.
+6. **Final check** -- Run `references/outcome/final-rubric.md`. Revise if any required gate fails.
+7. **Return** the rewritten text only (silent output). Append a Changes list only if the user asked for explanation.
 
 ### Humanize Output
 
@@ -63,75 +90,12 @@ Changes:
 - "<original>" -> "<replacement>": <brief reason>
 ```
 
-For empty input, respond:
+## Style Learning
 
-```text
-Input text is empty. Please provide the content you want rewritten.
-```
+The skill observes the user's own conversation messages to build `syntactic_dna` in `writing-profile.json`. Sampling triggers when a user message contains 2 or more complete sentences totalling 30 or more words. The skill extracts descriptive structural observations (rhythm patterns, punctuation habits, voice register), not numeric measurements. A pattern is committed to `syntactic_dna` only after 3 independent session observations agree.
 
-## Detect Workflow
+Syntactic DNA governs rhythm. Senior Engineer Voice governs content decisions. The two do not conflict.
 
-1. Load `references/ai-markers.md`; load `references/technical-terms.md` when the text is technical.
-2. Split the text into sentences or sentence-like units. Count each sentence at most once.
-3. Mark sentences containing one or more AI markers, ignoring protected technical terms.
-4. Calculate `AI marker density = floor(marked_sentences / total_sentences * 100)`.
-5. Group findings under all report dimensions, even when a section has zero findings.
-6. For each non-empty dimension, provide at least one actionable fix with original fragment, issue, and rewrite example.
+Explicit preferences (word choices, domain terms, corrections to skill output) are written to `writing-profile.json` immediately when stated.
 
-### Detect Output
-
-Use this structure:
-
-```text
-AI marker density: <N>%
-
-Content: <count>
-- Location: <paragraph/sentence>
-  Fragment: "<text>"
-  Issue: <why it reads AI-shaped>
-  Rewrite example: "<example>"
-
-Language: <count>
-...
-
-Style and formatting: <count>
-...
-
-Communication intent: <count>
-...
-
-Markup, citations, and sources: <count>
-...
-
-Comment-style residue: <count>
-...
-```
-
-For empty input, respond:
-
-```text
-Input document is empty. I cannot run detection without text.
-```
-
-## Learning User Style
-
-Use `writing-profile.json` in the current working directory when available. If it does not exist, continue normally and create it only when the user gives a preference, correction, sample, or asks you to learn their style.
-
-Record:
-
-- **Preference corrections**: "use X instead of Y", "we say X", "avoid Y".
-- **Domain terms**: team, product, architecture, or business terms the user wants preserved or preferred.
-- **Style samples**: short examples of the user's own writing, summarized into practical guidance.
-- **Recurring patterns**: repeated L1-transfer or habit patterns that the user corrects or that appear at least twice in the same submitted text.
-
-Do not expose sensitive inferences. When recording a profile update, confirm only the concrete preference or term that was saved.
-
-Profile storage and limits are defined in `references/profile-schema.md`.
-
-## Gotchas
-
-- Some words in AI-marker lists are legitimate technical terms in context. Check `references/technical-terms.md` before flagging them.
-- "Human" does not mean casual. A humanized client report can still be formal, precise, and restrained.
-- Do not invent facts to replace vague claims. If a claim needs evidence and no evidence is available, make the sentence more honest or ask for the missing detail.
-- Do not remove citations, warnings, legal qualifiers, or security constraints just because they look formal. Remove only AI-shaped filler and malformed reference leaks.
-- Preserve code blocks and commands unless the user asks to rewrite them.
+Sampling never applies to text submitted for humanization. Only the user's own typed messages qualify as style evidence.

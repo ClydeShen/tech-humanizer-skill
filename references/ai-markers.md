@@ -31,16 +31,19 @@ Use severity to decide how aggressively to rewrite.
 
 ### High
 
-Near-certain generated-text residue:
+Near-certain generated-text residue. Remove or repair every time, no threshold required:
 
 - assistant service language in a final document;
 - knowledge-cutoff or training-data disclaimers;
 - leaked source/search tokens such as `turn0search0`, `oaicite`, `contentReference`;
 - placeholder residue such as `[Your Name]`;
 - fake or malformed citation syntax;
-- Markdown/HTML/source markup leaking into prose.
+- Markdown/HTML/source markup leaking into prose;
+- emoji in technical or professional prose -- remove entirely;
+- em dashes (--) in prose -- replace with comma, colon, parentheses, or sentence break;
+- curly quotes (" ") in technical or professional text -- replace with straight ASCII quotes.
 
-Action: remove or repair these every time.
+Action: remove or repair these every time. Em dashes and curly quotes that appear in code samples or quoted source material are exempt.
 
 ### Medium
 
@@ -448,27 +451,32 @@ Fix:
 
 - Convert to prose, a plain list, or a table when comparison is the real goal.
 
-### S4. Em Dash Overuse
+### S4. Em Dash
+
+Severity: **High** -- unconditional strip, no threshold required.
 
 Signal:
 
-- Multiple em dashes in one sentence or repeated dashes across a short passage.
-- Em dashes used as the default connector for every aside.
+- Any em dash in prose output.
 
 Fix:
 
-- Use commas, parentheses, colons, semicolons, or sentence breaks.
-- In technical contexts, ASCII hyphens are often more natural than typographic punctuation.
+- Replace with comma, colon, parentheses, or a sentence break.
+- ASCII hyphens used as range indicators (e.g., "M1-M3") or in compound words are not affected.
+- Em dashes inside code samples or quoted source material are exempt.
 
-### S5. Curly Quotes in Technical Text
+### S5. Curly Quotes
+
+Severity: **High** -- unconditional strip, no threshold required.
 
 Signal:
 
-- Curly quotes around code strings, CLI examples, identifiers, JSON keys, config values, or chat-like prose.
+- Curly quotes in any technical or professional prose output.
 
 Fix:
 
-- Use straight ASCII quotes unless the output is a typeset publication with a house style.
+- Replace with straight ASCII quotes throughout.
+- Curly quotes inside quoted source material or typeset publication excerpts are exempt.
 
 ### S6. Skipped Heading Levels
 
@@ -524,6 +532,24 @@ Signal:
 Fix:
 
 - Delete summaries that do not add a decision, next step, or constraint.
+
+### S11. Intra-Document Register Shift
+
+Signal:
+
+- Abrupt change in writing quality, vocabulary level, or tone between sections of the same document.
+- One paragraph reads like a senior engineer wrote it; the next reads like generated filler.
+- Sudden shift from specific, grounded language to abstract or promotional phrasing.
+
+Why it reads AI-shaped:
+
+Mixed-register documents often indicate sections written at different times, by different prompts, or with different context windows. Humans writing a single document maintain a consistent register even when switching topics.
+
+Fix:
+
+- Identify the dominant register of the document (the sections that read most naturally).
+- Rewrite the outlier sections to match that register.
+- Do not flatten style variation -- vary sentence length and structure -- but keep the vocabulary level and tone consistent.
 
 ## Communication Intent Markers
 
@@ -757,13 +783,14 @@ Fix:
 
 Use this sequence for stronger rewrites:
 
-1. Strip high-severity residue first: assistant language, knowledge cutoff disclaimers, placeholders, leaked references, broken markup.
+1. Strip high-severity residue first: assistant language, knowledge cutoff disclaimers, placeholders, leaked references, broken markup, emoji, em dashes, curly quotes.
 2. Protect technical terms and user-preferred domain terms.
-3. Replace vague authority and grand claims with evidence or narrower claims.
-4. Reduce inflated vocabulary and formal padding.
-5. Repair structure: headings, lists, tables, duplicated summaries.
+3. Replace vague authority and grand claims with evidence or narrower claims. Apply Claim Scoping when a claim meets all three conditions: uses absolute certainty language (always, never, definitely, it is clear), has no supporting evidence within 2 sentences, and is empirical. Narrow the scope -- do not add hedging qualifiers. Design decisions and stated preferences are exempt.
+4. Reduce inflated vocabulary and formal padding. When replacing a vocabulary marker, check the `era` field in `references/lexicons/ai-style-lexicon.json` -- current-era terms are stronger signals than legacy ones.
+5. Repair structure: headings, lists, tables, duplicated summaries. Check for S11 intra-document register shifts and unify the dominant register.
 6. Tune register for the target channel.
 7. Do a final marker pass. If a marker remains for a good reason, leave it.
+8. Note: a document that never acknowledges uncertainty, tradeoffs, or incomplete information is itself a signal. Uniform confidence is an AI tell. If the source text resolves every question neatly and hedges nothing, flag it as a possible register problem even if individual markers are clean.
 
 ## Detection Notes
 
