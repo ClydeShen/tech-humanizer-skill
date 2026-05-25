@@ -1,6 +1,6 @@
 {
   "name": "tech-humanizer-skill",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": false,
   "description": "Agent Skill for removing AI-writing markers while preserving technical terminology.",
   "license": "MIT",
@@ -13,7 +13,8 @@
     "url": "https://github.com/ClydeShen/tech-humanizer-skill/issues"
   },
   "scripts": {
-    "validate": "python scripts/validate.py"
+    "validate": "python scripts/validate.py",
+    "test:evals": "promptfoo eval -c evals/promptfooconfig.yaml -o evals/output.json --no-cache --no-share"
   },
   "keywords": [
     "agent-skill",

@@ -20,6 +20,16 @@ yarn-error.log*
 .env.local
 .env.*.local
 
+# Eval output and result exports
+evals/output.json
+evals/results-export*.json
+
+# Memobank personal memory
+.memobank/
+
+# Windows artifacts
+nul
+
 # Python
 __pycache__/
 *.py[cod]
