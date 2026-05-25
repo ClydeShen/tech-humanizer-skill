@@ -1,6 +1,6 @@
 {
   "skill_name": "tech-humanizer-skill",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "source_basis": [
     "Wikipedia:Signs of AI writing",
     "Claude Agent Skills best practices",
@@ -106,8 +106,16 @@
       "expected_output": "A concrete engineering sentence that keeps only meaningful properties or replaces the triple with specific behavior.",
       "assertions": [
         {
-          "name": "reduces padded triples",
-          "description": "Output avoids preserving both three-item lists unchanged unless each item is made concrete."
+          "name": "collapses adjective triple",
+          "description": "Output does not contain 'fast, reliable' or 'reliable, and scalable' as a padding sequence."
+        },
+        {
+          "name": "collapses verb triple",
+          "description": "Output does not contain 'monitors, analyzes' or 'analyzes, and reports' as a verb padding sequence."
+        },
+        {
+          "name": "reduces to a concrete claim",
+          "description": "Output replaces both three-item lists with a single noun phrase or a sentence with a specific capability."
         }
       ]
     },
@@ -143,15 +151,15 @@
       "id": "humanize-heading-and-breaks",
       "covers": ["S6", "S7"],
       "prompt": "Humanize this Markdown document:\n# Setup\n\n---\n\n### Install the CLI\nRun npm install.",
-      "expected_output": "A Markdown document with no redundant thematic break before the heading and a corrected heading sequence.",
+      "expected_output": "A Markdown document where '# Setup' is followed by '## Install the CLI' (H2, not H3) with no '---' thematic break between them.",
       "assertions": [
         {
-          "name": "fixes skipped heading level",
-          "description": "Output changes the subheading to '## Install the CLI' or otherwise avoids jumping from H1 to H3."
+          "name": "demotes H3 to H2",
+          "description": "Output uses '## Install the CLI', not '### Install the CLI', resolving the H1→H3 jump."
         },
         {
-          "name": "removes break before heading",
-          "description": "Output removes the thematic break immediately before the heading."
+          "name": "removes thematic break before heading",
+          "description": "Output has no '---' between '# Setup' and the subheading."
         }
       ]
     },
@@ -267,11 +275,11 @@
       "id": "detect-markup-and-source-leaks",
       "covers": ["M1", "M2", "M3", "M4", "M5"],
       "prompt": "Detect AI writing markers in this text: \"According to sources, the endpoint is deprecated <ref>Release Notes. See turn0search0 and contentReference:2 for details. The change is documented in a major 2025 industry report.\"",
-      "expected_output": "A detection report that flags source laundering, broken markup, internal retrieval token leaks, and unsupported source claims under Markup, citations, and sources.",
+      "expected_output": "A detection report with a 'Source & markup' section that identifies leaked citation tokens (turn0search0, contentReference:2) and notes that the vague 'major 2025 industry report' claim needs a real source.",
       "assertions": [
         {
           "name": "flags source and markup category",
-          "description": "Output includes a Markup, citations, and sources section with findings."
+          "description": "Output includes a 'Source & markup' section with findings."
         },
         {
           "name": "identifies leaked tokens",
