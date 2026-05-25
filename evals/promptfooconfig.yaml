@@ -1,0 +1,544 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: 'Tech Humanizer Skill — AI-marker removal & style normalization'
+
+providers:
+  - id: openai:chat:qwen2.5-coder-32b-instruct-q5_k_m.gguf
+    label: Qwen2.5-Coder-32B-Q5_K_M
+    config:
+      apiBaseUrl: http://localhost:8080/v1
+      apiKey: local
+      temperature: 0.1
+      max_tokens: 4096
+
+prompts:
+  - file://prompts/main.json
+
+defaultTest:
+  options:
+    provider:
+      id: openai:chat:qwen2.5-coder-32b-instruct-q5_k_m.gguf
+      config:
+        apiBaseUrl: http://localhost:8080/v1
+        apiKey: local
+  assert:
+    - type: latency
+      threshold: 120000
+  # No system_prompt in vars — it's in the prompt JSON file
+
+tests:
+  # ─── C1+C2+L1: Legacy & attribution ─────────────────────────────
+  - description: 'humanize-legacy-and-attribution'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this release-note paragraph: "This launch stands as a testament to our engineering excellence.
+        Experts argue that it represents a pivotal moment for the platform and underscores its enduring value."
+    assert:
+      - type: javascript
+        value: "!output.toLowerCase().includes('stands as a testament')"
+        weight: 3
+        metric: no-grand-claim
+      - type: javascript
+        value: "!output.toLowerCase().includes('pivotal moment')"
+        weight: 2
+        metric: no-grand-claim
+      - type: javascript
+        value: "!output.toLowerCase().includes('enduring value')"
+        weight: 2
+        metric: no-grand-claim
+      - type: javascript
+        value: "!output.toLowerCase().includes('experts argue')"
+        weight: 3
+        metric: no-vague-attribution
+      - type: llm-rubric
+        value: 'Output is a direct release-note paragraph without grand legacy claims or vague attribution.'
+        weight: 2
+        metric: quality
+
+  # ─── C3+L1: Promotional-technical ───────────────────────────────
+  - description: 'humanize-promotional-technical'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this technical overview: "Our groundbreaking platform boasts a vibrant developer ecosystem
+        and cutting-edge observability features for Kubernetes workloads."
+    assert:
+      - type: icontains
+        value: 'observability'
+        weight: 2
+        metric: preserve-tech
+      - type: icontains
+        value: 'Kubernetes'
+        weight: 2
+        metric: preserve-tech
+      - type: javascript
+        value: "!output.toLowerCase().includes('groundbreaking')"
+        weight: 3
+        metric: no-hype
+      - type: javascript
+        value: "!output.toLowerCase().includes('boasts')"
+        weight: 3
+        metric: no-hype
+      - type: javascript
+        value: "!output.toLowerCase().includes('vibrant')"
+        weight: 2
+        metric: no-hype
+      - type: javascript
+        value: "!output.toLowerCase().includes('cutting-edge')"
+        weight: 3
+        metric: no-hype
+      - type: llm-rubric
+        value: 'Output preserves technical terms while removing promotional framing.'
+        weight: 2
+        metric: quality
+
+  # ─── C4: Dangling participles ───────────────────────────────────
+  - description: 'humanize-dangling-participles'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this engineering update: "The API now handles 12,000 requests per second,
+        showcasing its robust architecture and highlighting the team's meticulous approach."
+    assert:
+      - type: icontains
+        value: '12,000'
+        weight: 2
+        metric: keep-metric
+      - type: javascript
+        value: "!output.toLowerCase().includes('showcasing')"
+        weight: 3
+        metric: no-commentary
+      - type: javascript
+        value: "!output.toLowerCase().includes('highlighting')"
+        weight: 3
+        metric: no-commentary
+      - type: javascript
+        value: "!output.toLowerCase().includes('robust')"
+        weight: 2
+        metric: no-commentary
+      - type: javascript
+        value: "!output.toLowerCase().includes('meticulous')"
+        weight: 2
+        metric: no-commentary
+      - type: llm-rubric
+        value: 'Output retains the throughput metric and removes trailing participial commentary.'
+        weight: 2
+        metric: quality
+
+  # ─── C5+I4: Template openers ────────────────────────────────────
+  - description: 'humanize-template-openers'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Rewrite this for a design doc: "In today's fast-paced cloud landscape, it is important to note
+        that the system faces challenges around retry behavior. This section will explore how retries work."
+    assert:
+      - type: javascript
+        value: "!/In today['s] fast-paced/.test(output)"
+        weight: 3
+        metric: no-landscape-framing
+      - type: javascript
+        value: "!output.toLowerCase().includes('it is important to note')"
+        weight: 3
+        metric: no-hedging
+      - type: javascript
+        value: "!output.toLowerCase().includes('this section will explore')"
+        weight: 3
+        metric: no-meta
+      - type: llm-rubric
+        value: 'Output starts with substantive retry behavior and removes landscape framing and filler.'
+        weight: 2
+        metric: quality
+
+  # ─── C6: Elegant variation ──────────────────────────────────────
+  - description: 'humanize-elegant-variation'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this text: "The developer designed the schema. The software artisan then updated
+        the data persistence repository and asked the keyboard wrangler to review it."
+    assert:
+      - type: javascript
+        value: "!output.toLowerCase().includes('software artisan')"
+        weight: 3
+        metric: no-artificial-synonym
+      - type: javascript
+        value: "!output.toLowerCase().includes('data persistence repository')"
+        weight: 3
+        metric: no-artificial-synonym
+      - type: javascript
+        value: "!output.toLowerCase().includes('keyboard wrangler')"
+        weight: 3
+        metric: no-artificial-synonym
+      - type: llm-rubric
+        value: 'Output uses direct technical terms (developer, database, reviewer) instead of artificial synonyms.'
+        weight: 2
+        metric: quality
+
+  # ─── L2+L3: Copula + negative parallelism ───────────────────────
+  - description: 'humanize-copula-and-negative-parallel'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this documentation sentence: "This module serves as the primary adapter. Not only
+        does it reduce latency, but it also improves throughput."
+    assert:
+      - type: javascript
+        value: "!output.toLowerCase().includes('serves as')"
+        weight: 3
+        metric: no-copula-sub
+      - type: javascript
+        value: "!output.toLowerCase().includes('not only')"
+        weight: 3
+        metric: no-neg-parallel
+      - type: javascript
+        value: "!output.toLowerCase().includes('but also')"
+        weight: 2
+        metric: no-neg-parallel
+      - type: llm-rubric
+        value: 'Output uses simpler verbs and straightforward positive claims.'
+        weight: 2
+        metric: quality
+
+  # ─── L4: Rule of three ──────────────────────────────────────────
+  - description: 'humanize-rule-of-three'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this marketing-heavy product sentence for engineers: "The tool provides a fast,
+        reliable, and scalable solution that monitors, analyzes, and reports on pipeline health."
+    assert:
+      - type: javascript
+        value: "!output.toLowerCase().includes('fast, reliable')"
+        weight: 2
+        metric: no-adj-triple
+      - type: javascript
+        value: "!output.toLowerCase().includes('scalable solution')"
+        weight: 2
+        metric: no-adj-triple
+      - type: javascript
+        value: "!output.toLowerCase().includes('monitors, analyzes')"
+        weight: 2
+        metric: no-verb-triple
+      - type: llm-rubric
+        value: 'Output reduces the three-item padding to meaningful specifics or a single clear claim.'
+        weight: 2
+        metric: quality
+
+  # ─── S1+S2+S4: Formatting markers ───────────────────────────────
+  - description: 'humanize-formatting-markers'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this message: "The System uses Advanced Algorithms to Process Data — delivering
+        **Fast**, **Reliable**, and **Scalable** Infrastructure — for Modern Applications."
+    assert:
+      - type: javascript
+        value: "!/Advanced Algorithms/.test(output)"
+        weight: 2
+        metric: no-arcane-cap
+      - type: javascript
+        value: "!output.includes('**Fast**')"
+        weight: 2
+        metric: no-decorative-bold
+      - type: llm-rubric
+        value: 'Output has ordinary capitalization, no decorative bold, and no overused em dashes.'
+        weight: 3
+        metric: quality
+
+  # ─── S3: Inline header list ─────────────────────────────────────
+  - description: 'humanize-inline-header-list'
+    threshold: 0.5
+    vars:
+      user_input: |
+        Humanize this Markdown:
+        - **Scalability**: The service handles more traffic.
+        - **Reliability**: The service retries failed calls.
+        - **Security**: The service validates tokens.
+    assert:
+      - type: llm-rubric
+        value: 'Output does not keep three consecutive bullets in the pattern "- **Label**: description".'
+        weight: 3
+        metric: quality
+
+  # ─── S6+S7: Heading & breaks ────────────────────────────────────
+  - description: 'humanize-heading-and-breaks'
+    threshold: 0.5
+    vars:
+      user_input: |
+        Humanize this Markdown document:
+        # Setup
+
+        ---
+
+        ### Install the CLI
+        Run npm install.
+    assert:
+      - type: llm-rubric
+        value: 'Output has "# Setup" followed by "## Install the CLI" (H2, not H3) with no "---" thematic break between them. There are no heading-level gaps and no horizontal rules before headings.'
+        weight: 3
+        metric: quality
+
+  # ─── S8: Reference leaks ────────────────────────────────────────
+  - description: 'humanize-reference-leaks'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this sentence: "As detailed in turn0search0, the endpoint is deprecated oaicite:1.
+        Please refer to contentReference:2 for details."
+    assert:
+      - type: javascript
+        value: "!output.includes('turn0search0')"
+        weight: 3
+        metric: no-token-leak
+      - type: javascript
+        value: "!output.includes('oaicite')"
+        weight: 3
+        metric: no-token-leak
+      - type: javascript
+        value: "!output.includes('contentReference')"
+        weight: 3
+        metric: no-token-leak
+      - type: llm-rubric
+        value: 'Output is a natural sentence with internal reference tokens fully removed.'
+        weight: 2
+        metric: quality
+
+  # ─── I1+I2: Assistant language ──────────────────────────────────
+  - description: 'humanize-assistant-language'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Rewrite this deployment note as a teammate: "Certainly! As of my last knowledge update,
+        blue-green deployment is recommended. I hope this helps. Is there anything else I can help you with?"
+    assert:
+      - type: javascript
+        value: "!/Certainly/.test(output)"
+        weight: 3
+        metric: no-assistant-stance
+      - type: javascript
+        value: "!output.toLowerCase().includes('i hope this helps')"
+        weight: 3
+        metric: no-help-offer
+      - type: javascript
+        value: "!output.toLowerCase().includes('knowledge update')"
+        weight: 3
+        metric: no-cutoff
+      - type: llm-rubric
+        value: 'Output is a direct teammate-style note without assistant-like padding or disclaimers.'
+        weight: 2
+        metric: quality
+
+  # ─── I3: Placeholder residue ────────────────────────────────────
+  - description: 'humanize-placeholder-residue'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this email draft: "Hi [Recipient Name], please review [Project Name] by [Date].
+        Note: Replace this with your actual deadline."
+    assert:
+      - type: javascript
+        value: '!/\\[.+?\\]/.test(output)'
+        weight: 3
+        metric: no-bracket-placeholders
+      - type: llm-rubric
+        value: 'Output removes placeholder residue and either supplies real values or asks for them.'
+        weight: 2
+        metric: quality
+
+  # ─── C3+I1+I4: Detect density ──────────────────────────────────
+  - description: 'detect-density-by-sentence'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Detect AI writing markers in this text: "The API returns 200 when the request succeeds.
+        This robust system stands as a testament to engineering excellence. Please note that retries
+        run after token refresh. Certainly! I hope this helps."
+    assert:
+      - type: regex
+        value: '\\d{1,3}%'
+        weight: 2
+        metric: reports-density
+      - type: llm-rubric
+        value: 'Output groups findings into Content, Language, Style & formatting, and Communication intent dimensions.'
+        weight: 3
+        metric: quality
+
+  # ─── PROFILE: Preference application ────────────────────────────
+  - description: 'profile-preference-application'
+    threshold: 0.5
+    vars:
+      user_input: >
+        My writing profile says: prefer 'use' over 'utilize' and prefer 'canary deployment' over
+        'gradual rollout'. Humanize this: "We utilize a gradual rollout to enhance release safety."
+    assert:
+      - type: icontains
+        value: 'use'
+        weight: 2
+        metric: applies-preference
+      - type: javascript
+        value: "!output.toLowerCase().includes('utilize')"
+        weight: 3
+        metric: no-utilize
+      - type: javascript
+        value: "!output.toLowerCase().includes('enhance')"
+        weight: 2
+        metric: no-vague-verb
+      - type: llm-rubric
+        value: 'Output applies saved preferences while removing generic AI vocabulary.'
+        weight: 2
+        metric: quality
+
+  # ─── C9+C10: Over-context & false specificity ───────────────────
+  - description: 'humanize-over-context-and-false-specificity'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this product note without inventing facts: "Since the dawn of cloud computing, teams
+        have searched for better deployment workflows. AtlasFlow is the most widely adopted release tool
+        in the industry and is used by millions of developers worldwide."
+    assert:
+      - type: javascript
+        value: "!output.toLowerCase().includes('since the dawn of cloud computing')"
+        weight: 3
+        metric: no-generic-background
+      - type: llm-rubric
+        value: 'Output removes generic historical setup and does not present unsupported superlatives as facts.'
+        weight: 3
+        metric: quality
+
+  # ─── L5+L6+L7+L8: Transition & formality padding ───────────────
+  - description: 'humanize-transition-and-formality-padding'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this status update: "Furthermore, the team will utilize the available telemetry in
+        order to potentially facilitate improved incident response. Additionally, this may generally
+        help improve incident response for the team."
+    assert:
+      - type: javascript
+        value: "!/Furthermore/.test(output)"
+        weight: 3
+        metric: no-transition-chain
+      - type: javascript
+        value: "!/Additionally/.test(output)"
+        weight: 3
+        metric: no-transition-chain
+      - type: javascript
+        value: "!output.toLowerCase().includes('utilize')"
+        weight: 3
+        metric: no-formal-padding
+      - type: javascript
+        value: "!output.toLowerCase().includes('in order to')"
+        weight: 2
+        metric: no-formal-padding
+      - type: llm-rubric
+        value: 'Output removes stacked transitions, formal padding, and repeated claims.'
+        weight: 2
+        metric: quality
+
+  # ─── M1+M2+M3+M4+M5: Markup & source leaks ────────────────────
+  - description: 'detect-markup-and-source-leaks'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Detect AI writing markers in this text: "According to sources, the endpoint is deprecated
+        <ref>Release Notes. See turn0search0 and contentReference:2 for details. The change is
+        documented in a major 2025 industry report."
+    assert:
+      - type: llm-rubric
+        value: 'Output flags source-and-markup category, identifies leaked tokens, and notes the vague claim needs real evidence.'
+        weight: 3
+        metric: quality
+
+  # ─── W1+W2+W3+W4+I5: Comment-style residue ────────────────────
+  - description: 'humanize-comment-style-residue'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this PR review comment: "Thank you for your contribution. I understand your concern,
+        and you raise a valid point. While I see where you're coming from, best practices suggest
+        improving clarity and readability. Care should be taken to update the implementation."
+    assert:
+      - type: javascript
+        value: "!output.toLowerCase().includes('thank you for your contribution')"
+        weight: 3
+        metric: no-politeness
+      - type: javascript
+        value: "!output.toLowerCase().includes('i understand your concern')"
+        weight: 3
+        metric: no-politeness
+      - type: javascript
+        value: "!output.toLowerCase().includes('best practices')"
+        weight: 2
+        metric: no-vague-best-practice
+      - type: javascript
+        value: "!/Care should be taken/.test(output)"
+        weight: 3
+        metric: no-passive-compliance
+      - type: llm-rubric
+        value: 'Output is a concise PR review with concrete requested changes, no assistant-like padding.'
+        weight: 2
+        metric: quality
+
+  # ─── OUTCOME+CHANNEL_STYLE: Channel fit ────────────────────────
+  - description: 'outcome-channel-fit-slack-vs-client'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Rewrite this twice, once for Slack and once for a client email:
+        "I am pleased to inform you that the deployment has been completed successfully.
+        Please review your services at your earliest convenience and notify me of any anomalies."
+    assert:
+      - type: llm-rubric
+        value: 'Output produces two distinct rewrites — Slack (short, teammate-like) and client email (professional, direct). Neither keeps ceremonial phrasing.'
+        weight: 3
+        metric: quality
+
+  # ─── OUTCOME+SOURCE_INTEGRITY: Source boundary ─────────────────
+  - description: 'outcome-source-boundary'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this without inventing or hiding missing evidence: "Reports indicate that AtlasFlow
+        is the fastest CI/CD tool in the market, with unmatched adoption across Fortune 500 companies."
+    assert:
+      - type: llm-rubric
+        value: 'Output removes vague authority and unsupported superlatives, preserving the source boundary (asks for evidence or narrows the claim).'
+        weight: 3
+        metric: quality
+
+  # ─── OUTCOME+FINAL_RUBRIC: Final rubric ────────────────────────
+  - description: 'outcome-final-rubric-human-texture'
+    threshold: 0.5
+    vars:
+      user_input: >
+        Humanize this release note using the final rubric: "This update represents a pivotal
+        milestone in our journey to deliver robust, scalable, and user-centric solutions.
+        Furthermore, it enhances the overall experience. In conclusion, this release underscores
+        our commitment to excellence."
+    assert:
+      - type: javascript
+        value: "!output.toLowerCase().includes('pivotal milestone')"
+        weight: 2
+        metric: no-ceremonial
+      - type: javascript
+        value: "!output.toLowerCase().includes('journey')"
+        weight: 2
+        metric: no-ceremonial
+      - type: javascript
+        value: "!/In conclusion/.test(output)"
+        weight: 2
+        metric: no-ceremonial
+      - type: javascript
+        value: "!output.toLowerCase().includes('underscores')"
+        weight: 2
+        metric: no-ceremonial
+      - type: javascript
+        value: "!output.toLowerCase().includes('commitment to excellence')"
+        weight: 3
+        metric: no-ceremonial
+      - type: llm-rubric
+        value: 'Output is concise, has no ceremonial opening/closing, no stacked transitions, and does not invent details.'
+        weight: 2
+        metric: quality
