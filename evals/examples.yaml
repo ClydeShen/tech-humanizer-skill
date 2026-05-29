@@ -1,0 +1,299 @@
+- description: "Lovarank product copy: convert a generic feature list into benefit-led product copy"
+  vars:
+    source_note: "Lovarank Example A contrasts a generic travel-mug feature list with human copy that adds a product name, a morning-commute scenario, and a concrete spill-prevention benefit."
+    channel: "e-commerce product description"
+    ai_sample: "This travel mug has double-wall insulation, a leak-resistant lid, and an ergonomic grip. It is suitable for commuters and travelers who need a reliable beverage container."
+    human_reference: "A stronger human edit should name or frame the product, keep the insulation/lid/grip facts, and connect them to a concrete use case such as commuting, spills, or carrying it in a bag."
+    expected_distinction: "Human copy ties features to a buyer's situation; AI copy stays generic and list-like."
+    draft: "This travel mug has double-wall insulation, a leak-resistant lid, and an ergonomic grip. It is suitable for commuters and travelers who need a reliable beverage container."
+  assert:
+    - type: javascript
+      metric: preserves_product_facts
+      value: |
+        return /double-wall insulation/i.test(output) &&
+        /leak-resistant lid/i.test(output) &&
+        /ergonomic grip/i.test(output)
+    - type: javascript
+      metric: avoids_generic_product_filler
+      value: |
+        return !/suitable for commuters and travelers who need a reliable beverage container/i.test(output) &&
+        !/perfect for/i.test(output)
+    - type: llm-rubric
+      metric: source_aligned_product_humanization
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        AI sample: {{ai_sample}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output:
+        - preserves the product facts from the AI sample,
+        - adds concrete buyer context or benefit language already licensed by the sample/reference,
+        - no longer reads like a generic feature list,
+        - does not invent unsupported specs, price, warranty, material, or brand claims.
+
+- description: "Lovarank remote-work intro: replace bland trend summary with a sharper hook"
+  vars:
+    source_note: "Lovarank Example B contrasts a flat remote-work trend summary with human writing that uses a memorable image and a curiosity gap."
+    channel: "blog introduction"
+    ai_sample: "Remote work has grown in popularity. Many companies now offer flexible schedules and remote positions. This trend has changed the workplace."
+    human_reference: "A stronger human edit should keep the remote-work trend claim but use a more vivid opening and point to specific workplace changes such as meetings, hiring, schedules, or measuring output."
+    expected_distinction: "Human writing creates an angle and image; AI writing states broad facts in predictable order."
+    draft: "Remote work has grown in popularity. Many companies now offer flexible schedules and remote positions. This trend has changed the workplace."
+  assert:
+    - type: javascript
+      metric: preserves_remote_work_topic
+      value: |
+        return /remote work/i.test(output) &&
+        /workplace|teams|companies|schedules|hiring|meetings|output/i.test(output)
+    - type: javascript
+      metric: removes_flat_trend_summary
+      value: |
+        return !/has grown in popularity/i.test(output) &&
+        !/this trend has changed the workplace/i.test(output)
+    - type: llm-rubric
+      metric: source_aligned_blog_hook
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        AI sample: {{ai_sample}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output keeps the same topic while giving the intro a sharper human angle.
+        It should not add statistics, dates, company names, or claims absent from the sample.
+
+- description: "Lovarank legal clause: preserve attorney-edited risk allocation details"
+  vars:
+    source_note: "Lovarank's legal example shows that the human-edited clause adds legally material scope: defense, indemnity, covered losses, costs, expenses, attorneys fees, third-party claims, breach, and gross negligence."
+    channel: "legal clause"
+    ai_sample: "The Parties agree to indemnify each other against losses arising from any breach of this Agreement."
+    human_reference: "Each Party must defend, indemnify, and hold harmless the other Party for losses, liabilities, damages, costs, expenses, reasonable attorneys fees, third-party claims, breach of the Agreement, and gross negligence."
+    expected_distinction: "Human legal writing allocates risk precisely; AI legal writing often leaves scope ambiguous."
+    draft: "The Parties agree to indemnify each other against losses arising from any breach of this Agreement. Clarify the clause using only the legal scope supplied in the reference."
+  assert:
+    - type: javascript
+      metric: preserves_legal_scope_terms
+      value: |
+        return /Each Party|Parties/i.test(output) &&
+        /defend/i.test(output) &&
+        /indemnify/i.test(output) &&
+        /hold harmless/i.test(output) &&
+        /attorneys fees/i.test(output) &&
+        /third-party claim/i.test(output) &&
+        /gross negligence/i.test(output)
+    - type: javascript
+      metric: avoids_unlicensed_legal_additions
+      value: |
+        return !/consequential damages/i.test(output) &&
+        !/punitive damages/i.test(output) &&
+        !/willful misconduct/i.test(output) &&
+        !/jurisdiction/i.test(output)
+    - type: llm-rubric
+      metric: source_aligned_legal_precision
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        AI sample: {{ai_sample}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output moves from vague mutual indemnity toward the supplied legal scope.
+        It must not invent legal concepts outside the human reference criterion.
+
+- description: "Lovarank medical instructions: preserve clinician-style safety specificity"
+  vars:
+    source_note: "Lovarank's medical example contrasts vague advice with clinician-reviewed wording that gives route, interval, food instruction, alcohol warning, symptoms, and stop/contact directive."
+    channel: "patient medication instruction"
+    ai_sample: "Take one tablet twice daily. Avoid alcohol. Consult your doctor if you have side effects."
+    human_reference: "A clinician-style edit should say one tablet by mouth every 12 hours with food, avoid alcohol, and stop/contact the prescribing clinician for rash, shortness of breath, or persistent dizziness."
+    expected_distinction: "Human medical writing makes safety instructions specific; AI medical writing can be dangerously thin."
+    draft: "Take one tablet twice daily. Avoid alcohol. Consult your doctor if you have side effects. Clarify the instructions using only the route, timing, food, alcohol, warning symptoms, and stop/contact details supplied in the reference."
+  assert:
+    - type: javascript
+      metric: preserves_clinical_specifics
+      value: |
+        return /one tablet by mouth/i.test(output) &&
+        /every 12 hours/i.test(output) &&
+        /with food/i.test(output) &&
+        /avoid alcohol|do not drink alcohol/i.test(output) &&
+        /rash/i.test(output) &&
+        /shortness of breath/i.test(output) &&
+        /persistent dizziness/i.test(output) &&
+        /prescribing clinician/i.test(output)
+    - type: javascript
+      metric: preserves_stop_contact_directive
+      value: |
+        return /stop/i.test(output) &&
+        /contact/i.test(output)
+    - type: llm-rubric
+      metric: source_aligned_medical_safety
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        AI sample: {{ai_sample}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output is clearer and more safety-specific than the AI sample.
+        It must not add new symptoms, dosage changes, contraindications, or medical advice outside the supplied reference.
+
+- description: "Reddit prosody discussion: add rhythm and rough texture without over-polishing"
+  vars:
+    source_note: "A Reddit commenter argues that AI lacks prosody and lived experience; human writing uses rough texture, sentence-length variation, sound, and embodied judgment."
+    channel: "short reflective forum reply"
+    ai_sample: "AI writing can be technically correct and narratively coherent, but it often lacks emotional resonance because it does not have lived experience or the ability to understand how phrasing affects a reader."
+    human_reference: "A human-sounding reply should keep the technically-correct-versus-emotionally-flat contrast, vary sentence length, and include a felt point about sound, pacing, or phrasing."
+    expected_distinction: "Human writing has prosody, uneven rhythm, and lived texture; AI writing can be smooth and correct but emotionally flat."
+    draft: "AI writing can be technically correct and narratively coherent, but it often lacks emotional resonance because it does not have lived experience or the ability to understand how phrasing affects a reader."
+  assert:
+    - type: javascript
+      metric: preserves_prosody_claim
+      value: |
+        return /technically correct/i.test(output) &&
+        /narratively coherent/i.test(output) &&
+        /lived experience/i.test(output) &&
+        /reader/i.test(output)
+    - type: javascript
+      metric: has_sentence_length_variation
+      value: |
+        const sentences = output.split(/[.!?]+/).map(s => s.trim()).filter(Boolean);
+        return sentences.length >= 2 &&
+        Math.max(...sentences.map(s => s.split(/\s+/).length)) -
+          Math.min(...sentences.map(s => s.split(/\s+/).length)) >= 6;
+    - type: llm-rubric
+      metric: source_aligned_prosody_texture
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        AI sample: {{ai_sample}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output sounds like a real forum reply rather than a polished essay.
+        It should use rhythm or phrasing as part of the point, while preserving the exact core contrast from the AI sample.
+
+- description: "Reddit statistical-average discussion: keep probability-engine explanation but avoid bland neutrality"
+  vars:
+    source_note: "A Reddit commenter describes LLMs as probability engines that predict next tokens, producing writing that can become statistically average and less distinctive."
+    channel: "casual explanation"
+    ai_sample: "Large language models predict the most likely next tokens based on training data, so their creative writing can become broadly acceptable but less distinctive than human writing."
+    human_reference: "A human-sounding explanation should keep the next-token/probability-engine mechanism, but say it with a clearer point of view about why average, broadly likeable prose can feel empty or less distinctive."
+    expected_distinction: "Human commentary can take a position; AI explanation tends to flatten the claim into neutral summary."
+    draft: "Large language models predict the most likely next tokens based on training data, so their creative writing can become broadly acceptable but less distinctive than human writing."
+  assert:
+    - type: javascript
+      metric: preserves_probability_mechanism
+      value: |
+        return /predict/i.test(output) &&
+        /token/i.test(output) &&
+        /training data/i.test(output)
+    - type: javascript
+      metric: avoids_bland_summary
+      value: |
+        return !/broadly acceptable but less distinctive/i.test(output) &&
+        !/^Large language models predict/i.test(output.trim())
+    - type: llm-rubric
+      metric: source_aligned_statistical_average
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        AI sample: {{ai_sample}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output explains the probability-engine idea in a casual, opinionated way.
+        It must not add unsupported claims about model architecture beyond next-token prediction and training-data averaging.
+
+- description: "PMC academic science: preserve scoped finding about paragraph structure and equivocal language"
+  vars:
+    source_note: "Desaire et al. report that, in their academic-science corpus, human scientists used longer paragraphs, more sentence-length diversity, punctuation differences, and equivocal words such as but, however, and although."
+    channel: "academic writing analysis note"
+    ai_sample: "Human and ChatGPT scientific writing differ in several ways. Human writing often has longer paragraphs and uses words such as but, however, and although more often."
+    human_reference: "A rigorous note should keep the claim scoped to Desaire et al.'s academic-science corpus and avoid saying these traits prove authorship in all domains."
+    expected_distinction: "Human academic science writing in the study showed longer paragraphs, sentence-length diversity, punctuation differences, and more equivocal language; the claim is corpus-specific, not universal."
+    draft: "Human and ChatGPT scientific writing differ in several ways. Human writing often has longer paragraphs and uses words such as but, however, and although more often."
+  assert:
+    - type: javascript
+      metric: preserves_pmc_features
+      value: |
+        return /Desaire/i.test(output) &&
+        /academic-science corpus|academic science corpus|corpus/i.test(output) &&
+        /longer paragraphs/i.test(output) &&
+        /sentence-length diversity|sentence length diversity|sentence lengths/i.test(output) &&
+        /but|however|although/i.test(output)
+    - type: javascript
+      metric: avoids_universal_detection_claim
+      value: |
+        return !/proves authorship/i.test(output) &&
+        !/always/i.test(output) &&
+        !/never/i.test(output) &&
+        !/guarantee/i.test(output)
+    - type: llm-rubric
+      metric: source_aligned_academic_scope
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        AI sample: {{ai_sample}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output keeps the empirical claim scoped to the study/corpus.
+        It should mention at least two reported feature categories and avoid presenting them as a universal detector.
+
+- description: "HackerNoon technical analysis: explain perplexity and burstiness without detector overclaiming"
+  vars:
+    source_note: "The HackerNoon technical analysis is described as comparing AI and human text through perplexity and burstiness: predictability versus surprising word choice, and uniformity versus sentence-length variation."
+    channel: "technical analysis paragraph"
+    ai_sample: "AI-generated text is usually easy to identify because it has consistent sentence structures and predictable word choices. Human-written text is more variable and personal."
+    human_reference: "A stronger technical explanation should define perplexity as predictability and burstiness as sentence-length/complexity variation, while noting that these are probabilistic signals rather than proof of authorship."
+    expected_distinction: "AI text often has lower perplexity and more uniform rhythm; human text often has more surprise and burstiness, but detection remains probabilistic."
+    draft: "AI-generated text is usually easy to identify because it has consistent sentence structures and predictable word choices. Human-written text is more variable and personal."
+  assert:
+    - type: javascript
+      metric: explains_perplexity_and_burstiness
+      value: |
+        return /perplexity/i.test(output) &&
+        /predictable|predictability/i.test(output) &&
+        /burstiness/i.test(output) &&
+        /sentence/i.test(output)
+    - type: javascript
+      metric: avoids_authorship_certainty
+      value: |
+        return !/easy to identify/i.test(output) &&
+        !/proves? (that )?(a text|text|it) (was )?(AI|human)/i.test(output) &&
+        !/100%/i.test(output)
+    - type: llm-rubric
+      metric: source_aligned_detection_limits
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        AI sample: {{ai_sample}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output explains the two technical signals clearly and avoids detector absolutism.
+        It should improve the overconfident AI sample rather than teach evasion tactics.
+
+- description: "Project regression: PR description becomes direct without inventing a vulnerability"
+  vars:
+    source_note: "The project README contrasts generic AI PR phrasing with direct engineering language that says what changed and why."
+    channel: "pull request description"
+    ai_sample: "This pull request encompasses a comprehensive refactoring of the authentication module to enhance the security posture and improve the overall robustness of session management."
+    human_reference: "A good PR rewrite should be concise, direct, and engineering-specific, but it must not invent a session hijacking vulnerability unless the draft says one exists."
+    expected_distinction: "Human engineering writing states the change and impact directly; AI PR writing often uses ceremonial nouns and inflated claims."
+    draft: "This pull request encompasses a comprehensive refactoring of the authentication module to enhance the security posture and improve the overall robustness of session management."
+  assert:
+    - type: javascript
+      metric: preserves_pr_scope
+      value: |
+        return /authentication|auth/i.test(output) &&
+        /session management|sessions/i.test(output) &&
+        /security/i.test(output)
+    - type: javascript
+      metric: removes_ai_pr_markers
+      value: |
+        return !/pull request encompasses/i.test(output) &&
+        !/comprehensive refactoring/i.test(output) &&
+        !/enhance the security posture/i.test(output) &&
+        !/overall robustness/i.test(output)
+    - type: javascript
+      metric: avoids_invented_vulnerability
+      value: |
+        return !/session hijacking/i.test(output) &&
+        !/vulnerability/i.test(output) &&
+        !/CVE/i.test(output)
+    - type: llm-rubric
+      metric: source_aligned_pr_directness
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        AI sample: {{ai_sample}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output reads like a concise engineer-written PR description.
+        It must preserve the stated scope and avoid inventing implementation details, incidents, or vulnerabilities.

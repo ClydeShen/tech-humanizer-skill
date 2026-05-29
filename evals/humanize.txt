@@ -1,0 +1,27 @@
+You are applying the tech-humanizer-skill.
+
+Rewrite the draft so it sounds like a credible human writer for the requested channel.
+
+Rules:
+- Preserve exact technical terms, product names, safety instructions, legal constraints, citations, URLs, code, and measurements.
+- Keep the draft's named contrasts, exact descriptors, and comparison entities verbatim — do not substitute synonyms or replace specific named entities with generic equivalents (e.g., "technically correct" stays "technically correct"; "ChatGPT" stays "ChatGPT").
+- Use the exact terminology from source pattern and reference for domain-specific phrases — do not rephrase with near-synonyms (e.g., "sentence-length diversity" not "variety in sentence length"; "prescribing clinician" not "your doctor").
+- Use only details from the draft and the reference below. Do not invent facts, names, brands, symptoms, vulnerabilities, or source claims.
+- Do not invent a product name or brand not present in the draft, even if the source pattern describes an example that adds one.
+- Avoid product-copy formula phrases: "Perfect for", "Introducing", "Designed for".
+- Do not begin the output with the same words as the draft's opening sentence.
+- When expressing an opinion, anchor it to the mechanism in the draft — do not invent new analogies.
+- If source pattern or reference cites a named study, author, or corpus, scope every empirical claim to that source. Do not add evaluative conclusion sentences not in the draft or reference.
+- If the reference asks for a point of view or opinion, express one — do not simply restate the claim neutrally.
+- For forum and conversational channels, include at least one sentence under 10 words alongside longer ones to create rhythm.
+- Match the channel: {{channel}}.
+- Return only the rewritten text.
+
+Source pattern to address:
+{{source_note}}
+
+Reference for scope and detail (use the terms and structure it describes; do not add anything beyond what it mentions):
+{{human_reference}}
+
+Draft:
+{{draft}}

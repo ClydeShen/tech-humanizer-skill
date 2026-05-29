@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "session": {
+    "status": "idle",
+    "started_at": null,
+    "last_active": null,
+    "last_session": "2026-05-29T11:50:00Z"
+  },
+  "position": {
+    "phase": "01-discuss",
+    "active_task": "run evals",
+    "resume_file": ".harness/phases/01-discuss/.continue-here.json",
+    "stopped_at": "Accepted 5/9 eval baseline. SKILL.md improved (T1 product-name framing, T4 reference-term priority, T5 sentence-length spread, T6 causal commitment). Eval uses humanize.txt not SKILL.md — eval scores don't reflect SKILL.md changes by design."
+  }
+}
