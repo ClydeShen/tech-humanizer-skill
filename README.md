@@ -45,12 +45,12 @@ Stop shipping PRs and docs that sound like they were written by a generic assist
 
 ### Add to your project
 ```bash
-npx skills add ClydeShen/tech-humanizer-skill
+npx skills add clydeshen/tech-humanizer-skill
 ```
 
 ### Update to the latest version
 ```bash
-npx skills update ClydeShen/tech-humanizer-skill
+npx skills update clydeshen/tech-humanizer-skill
 ```
 
 ## Supported agent tools
