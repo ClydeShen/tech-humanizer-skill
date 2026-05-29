@@ -43,7 +43,7 @@ Ask: "Is the actual point buried behind a frame? Does the paragraph take a posit
 
 ## Vocabulary (2 pts per marker)
 
-- High-density AI vocabulary: check `references/lexicons/ai-style-lexicon.json` for current-era terms. Common examples: delve, tapestry, robust, meticulous, pivotal, showcase, foster, align with, enhance, underscore, garner, intricate, vibrant, testament, bolster, landscape.
+- High-density AI vocabulary: check `references/ai-style-lexicon.json` for current-era terms. Common examples: delve, tapestry, robust, meticulous, pivotal, showcase, foster, align with, enhance, underscore, garner, intricate, vibrant, testament, bolster, landscape.
 - Elegant variation: synonym-swapping to avoid repeating a precise technical noun ("data persistence layer" instead of "database")
 - Copula avoidance: "serves as" where "is" works, "represents" where "is" works, "functions as" where "is a" works
 - Vague attribution: "experts argue", "research suggests", "industry reports indicate" with no named source

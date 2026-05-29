@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "session": {
+    "status": "idle",
+    "started_at": null,
+    "last_active": null,
+    "last_session": "2026-05-29T00:00:00Z"
+  },
+  "position": {
+    "phase": "01-discuss",
+    "active_task": "run evals",
+    "resume_file": ".harness/phases/01-discuss/.continue-here.json",
+    "stopped_at": "Completed /setup-harness-skills — harness fully configured, labels created, branch protection set"
+  }
+}

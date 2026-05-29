@@ -20,7 +20,7 @@ Use it as a diagnostic map, not as a verdict machine. A marker means "this passa
 ## Operating Rules
 
 - Treat clusters as stronger evidence than isolated words. One "robust" in a technical design doc is weak; "robust, intricate, pivotal, showcasing" in the same paragraph is strong.
-- Preserve domain language before applying AI-vocabulary rules. Check `references/technical-terms.md`.
+- Preserve domain language before applying AI-vocabulary rules. Check `references/technical-terms.json`.
 - Do not invent facts to replace vague claims. If the source text lacks evidence, rewrite the sentence to be narrower or ask for the missing detail.
 - Separate "AI-shaped" from "bad writing." Some human writing is vague, formal, or promotional; report the risk and improve the prose without accusing the writer.
 - Prefer concrete edits over labels. "Replace 'stands as a testament' with the actual outcome" is more useful than "this sounds AI."
@@ -786,7 +786,7 @@ Use this sequence for stronger rewrites:
 1. Strip high-severity residue first: assistant language, knowledge cutoff disclaimers, placeholders, leaked references, broken markup, emoji, em dashes, curly quotes.
 2. Protect technical terms and user-preferred domain terms.
 3. Replace vague authority and grand claims with evidence or narrower claims. Apply Claim Scoping when a claim meets all three conditions: uses absolute certainty language (always, never, definitely, it is clear), has no supporting evidence within 2 sentences, and is empirical. Narrow the scope -- do not add hedging qualifiers. Design decisions and stated preferences are exempt.
-4. Reduce inflated vocabulary and formal padding. When replacing a vocabulary marker, check the `era` field in `references/lexicons/ai-style-lexicon.json` -- current-era terms are stronger signals than legacy ones.
+4. Reduce inflated vocabulary and formal padding. When replacing a vocabulary marker, check the `era` field in `references/ai-style-lexicon.json` -- current-era terms are stronger signals than legacy ones.
 5. Repair structure: headings, lists, tables, duplicated summaries. Check for S11 intra-document register shifts and unify the dominant register.
 6. Tune register for the target channel.
 7. Do a final marker pass. If a marker remains for a good reason, leave it.

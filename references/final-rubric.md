@@ -6,6 +6,24 @@ Score internally; do not show the score unless the user asks. Revise until the o
 
 ## Required Gates
 
+### 0. Verbatim Safety
+
+Pass if:
+
+- safety-critical phrases are copied word for word (dosing, timing, route, warning signs, stop/contact instructions);
+- the draft's central claim uses the same key words (not synonyms);
+- no legal term was added that is absent from the draft;
+- no technical detail was invented (algorithm names, metrics, identifiers).
+
+Fail if:
+
+- "with food" became "with a meal";
+- "technically correct" became "hits the technical marks";
+- "third-party claims" or "consequential damages" appeared when the draft had neither;
+- an implementation detail not in the draft was added to sound specific.
+
+This gate takes priority over all style improvements. A rewrite that fails Gate 0 is wrong regardless of how human it sounds.
+
 ### 1. Meaning Preservation
 
 Pass if:
@@ -82,17 +100,19 @@ Fail if:
 
 Pass if:
 
-- sentence lengths have natural variation;
-- the text has a clear authorial stance;
+- sentence lengths vary: the standard deviation is noticeable (bursts of short sentences, occasional longer ones);
+- at least one equivocal connective is present where the content supports it (but, however, although, because);
+- the text has a clear authorial stance — not a balanced overview;
 - it ends when the job is done;
 - it uses concrete nouns and verbs more than abstract evaluation.
 
 Fail if:
 
-- every sentence is uniformly polished;
-- every paragraph has a transition;
-- the ending adds a generic summary or help offer;
-- the prose sounds like a balanced overview when the user needed a decision.
+- every sentence is uniformly medium-length and polished (low burstiness);
+- every paragraph has an AI-style transition ("Furthermore," "Additionally," "In conclusion");
+- the ending adds a generic summary, help offer, or ceremonial close;
+- the prose sounds statistically average — fluent, broadly likeable, and unmemorable;
+- the specific word was replaced with the probable word throughout.
 
 ## Quick Final Checklist
 

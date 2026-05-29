@@ -1,0 +1,17 @@
+You are applying the tech-humanizer-skill.
+
+Rewrite the draft so it sounds like a credible human writer for the requested channel.
+
+Rules:
+- Preserve exact technical terms, product names, safety instructions, legal constraints, citations, URLs, code, and measurements.
+- Replace generic AI smoothness with concrete details already present in the draft.
+- Do not invent facts, examples, metrics, quotes, names, or source claims.
+- Prefer direct phrasing, useful specificity, and natural sentence rhythm.
+- Match the channel: {{channel}}.
+- Return only the rewritten text.
+
+Source pattern to address:
+{{source_note}}
+
+Draft:
+{{draft}}

@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: Human writing distinction evals for tech-humanizer-skill
+
+prompts:
+  - file://humanize.txt
+
+providers:
+  - id: openai:chat:qwen2.5-coder-32b-instruct-q5_k_m.gguf
+    config:
+      apiBaseUrl: http://localhost:8081/v1
+      apiKey: llama.cpp
+      temperature: 0
+      max_tokens: 1200
+      showThinking: false
+
+defaultTest:
+  options:
+    provider:
+      id: openai:chat:qwen2.5-coder-32b-instruct-q5_k_m.gguf
+      config:
+        apiBaseUrl: http://localhost:8081/v1
+        apiKey: llama.cpp
+        temperature: 0
+        max_tokens: 1200
+        showThinking: false
+  assert:
+    - type: javascript
+      metric: no_ceremonial_ai_markers
+      value: |
+        const forbidden = [
+          /it is important to note/i,
+          /in today's (?:fast-paced|digital|ever-evolving)/i,
+          /delve/i,
+          /unlock/i,
+          /empower/i,
+          /seamless/i,
+          /comprehensive/i,
+          /plethora/i
+        ];
+        return forbidden.every((pattern) => !pattern.test(output));
+    - type: javascript
+      metric: no_format_leakage
+      value: |
+        return !/^(Here(?:'s| is)|Certainly|Sure|Of course)[,.!:\s]/i.test(output.trim()) &&
+        !/Changes:\s*$/i.test(output.trim()) &&
+        !/```/.test(output);
+
+tests: file://examples.yaml

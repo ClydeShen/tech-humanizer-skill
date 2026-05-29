@@ -109,19 +109,19 @@ def validate_skill() -> None:
 
     for rel_path in [
         "references/ai-markers.md",
-        "references/technical-terms.md",
+        "references/technical-terms.json",
         "references/profile-schema.md",
-        "references/outcome/rewrite-playbook.md",
-        "references/outcome/channel-style.md",
-        "references/outcome/source-and-markup-integrity.md",
-        "references/outcome/final-rubric.md",
-        "references/lexicons/ai-style-lexicon.json",
+        "references/rewrite-playbook.md",
+        "references/channel-style.md",
+        "references/source-and-markup-integrity.md",
+        "references/final-rubric.md",
+        "references/ai-style-lexicon.json",
         "assets/detection-report-template.txt",
     ]:
         if not (ROOT / rel_path).exists():
             fail(f"Missing referenced file: {rel_path}")
 
-    lexicon_path = ROOT / "references" / "lexicons" / "ai-style-lexicon.json"
+    lexicon_path = ROOT / "references" / "ai-style-lexicon.json"
     try:
         lexicon = json.loads(read_text(lexicon_path))
     except json.JSONDecodeError as exc:

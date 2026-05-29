@@ -1,0 +1,6 @@
+{
+  "harness": {
+    "state_file": ".harness/state.json",
+    "docs_agents_dir": "docs/agents"
+  }
+}
