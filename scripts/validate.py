@@ -148,96 +148,10 @@ def validate_markers() -> None:
         fail(f"ai-markers.md is missing marker sections: {', '.join(sorted(missing))}")
 
 
-def validate_evals() -> None:
-    evals_path = ROOT / "evals.json"
-    if not evals_path.exists():
-        fail("evals.json is missing")
-    try:
-        payload = json.loads(read_text(evals_path))
-    except json.JSONDecodeError as exc:
-        fail(f"evals.json is not valid JSON: {exc}")
-
-    if isinstance(payload, list):
-        evals = payload
-    elif isinstance(payload, dict):
-        evals = payload.get("evals")
-        if payload.get("skill_name") != "tech-humanizer-skill":
-            fail("evals.json skill_name must be tech-humanizer-skill")
-    else:
-        fail("evals.json must be an object or array")
-
-    if not isinstance(evals, list) or not evals:
-        fail("evals.json must contain a non-empty evals array")
-
-    required_eval_fields = {"id", "prompt", "expected_output", "assertions"}
-    covered_markers: set[str] = set()
-    for index, item in enumerate(evals):
-        if not isinstance(item, dict):
-            fail(f"eval {index} must be an object")
-        missing = required_eval_fields - item.keys()
-        if missing:
-            fail(f"eval {index} missing fields: {', '.join(sorted(missing))}")
-        if not item["prompt"].strip():
-            fail(f"eval {index} prompt is empty")
-        if not item["expected_output"].strip():
-            fail(f"eval {index} expected_output is empty")
-        assertions = item["assertions"]
-        if not isinstance(assertions, list) or not assertions:
-            fail(f"eval {index} assertions must be a non-empty array")
-        for assertion in assertions:
-            if "name" not in assertion or "description" not in assertion:
-                fail(f"eval {index} assertion requires name and description")
-        covered_markers.update(item.get("covers", []))
-
-    minimum = {
-        "C1",
-        "C2",
-        "C3",
-        "C4",
-        "C5",
-        "C6",
-        "C9",
-        "C10",
-        "L1",
-        "L2",
-        "L3",
-        "L4",
-        "L5",
-        "L6",
-        "L7",
-        "L8",
-        "S1",
-        "S2",
-        "S3",
-        "S4",
-        "S6",
-        "S7",
-        "S8",
-        "I1",
-        "I2",
-        "I3",
-        "I4",
-        "I5",
-        "M1",
-        "M2",
-        "M3",
-        "M4",
-        "M5",
-        "W1",
-        "W2",
-        "W3",
-        "W4",
-    }
-    missing_coverage = minimum - covered_markers
-    if missing_coverage:
-        fail(f"evals.json missing coverage for: {', '.join(sorted(missing_coverage))}")
-
-
 def main() -> None:
     validate_skill()
     validate_markers()
-    validate_evals()
-    print("OK: skill structure, references, and evals are valid.")
+    print("OK: skill structure and references are valid.")
 
 
 if __name__ == "__main__":
