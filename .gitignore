@@ -23,6 +23,7 @@ yarn-error.log*
 # Eval output and result exports
 evals/output.json
 evals/results-export*.json
+.promptfoo/
 
 # Memobank personal memory
 .memobank/
@@ -40,11 +41,12 @@ __pycache__/
 venv/
 env/
 
-# Editor artifacts
+# Editor and tool artifacts
 .vscode/
 .idea/
 .cursor/
 .claude/
+.roam/
 *.swp
 *.swo
 *~
