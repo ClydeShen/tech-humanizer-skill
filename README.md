@@ -1,7 +1,7 @@
 # tech-humanizer-skill
 
 [![skills.sh](https://img.shields.io/badge/skills.sh-ClydeShen%2Ftech--humanizer--skill-blue?style=flat-square)](https://skills.sh/ClydeShen/tech-humanizer-skill)
-[![Validate Skill](https://img.shields.io/github/actions/workflow/status/ClydeShen/tech-humanizer-skill/evals.yml?branch=main&label=Build&style=flat-square)](https://github.com/ClydeShen/tech-humanizer-skill/actions/workflows/evals.yml)
+[![skills.sh](https://www.skills.sh/b/ClydeShen/tech-humanizer-skill)](https://www.skills.sh/ClydeShen/tech-humanizer-skill)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 [![Compatible with Claude Code](https://img.shields.io/badge/Compatible-Claude%20Code-7C4DFF?style=flat-square)](#supported-agent-tools)
