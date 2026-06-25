@@ -12,6 +12,8 @@ Use this file when the user asks to humanize for a specific format or audience. 
 
 ## Technical Documentation
 
+Voice: Senior Engineer — dry, precise, lead with the constraint, no enthusiasm.
+
 Outcome:
 
 - precise, direct, skimmable;
@@ -34,6 +36,8 @@ It is important to note that this robust API framework handles authentication er
 
 ## Design Docs and RFCs
 
+Voice: Senior Engineer — opinionated, tradeoffs named, position-taking, understatement.
+
 Outcome:
 
 - decision-oriented;
@@ -54,6 +58,8 @@ Redis represents a pivotal component in the evolving caching landscape, offering
 ```
 
 ## Release Notes
+
+Voice: Neutral-factual — user-visible change first, no triumph language, no opinion.
 
 Outcome:
 
@@ -76,6 +82,8 @@ This release marks a major milestone in our commitment to empowering users with 
 
 ## Pull Request Descriptions
 
+Voice: Senior Engineer — direct, what/why/how-tested, risk noted plainly.
+
 Outcome:
 
 - what changed;
@@ -97,6 +105,8 @@ This PR enhances authentication robustness and showcases a meticulous approach t
 
 ## PR Review Comments
 
+Voice: Senior Engineer, but kind — direct and specific, actor + requested change clear, no canned praise.
+
 Outcome:
 
 - direct, kind, specific;
@@ -116,6 +126,8 @@ Thank you for your contribution. You raise a valid point, and best practices sug
 ```
 
 ## Team Chat
+
+Voice: Warm and brief — conversational, natural shorthand, one clear next step. Not dry or formal.
 
 Outcome:
 
@@ -138,6 +150,8 @@ I am pleased to inform you that the deployment has completed successfully. Pleas
 
 ## Client Email
 
+Voice: Professional and courteous — clear ask or update, a touch of warmth, never padded or chatbot-like.
+
 Outcome:
 
 - professional but not padded;
@@ -158,6 +172,8 @@ I hope this message finds you well. We are pleased to inform you that the migrat
 ```
 
 ## Wikipedia or Encyclopedia-Like Prose
+
+Voice: Neutral and source-bound — no authorial stance, no opinion, no promotional phrasing.
 
 Outcome:
 

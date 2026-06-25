@@ -352,3 +352,34 @@
         return /fires/i.test(output) &&
         !/is triggered/i.test(output) &&
         !/executes on every push/i.test(output)
+
+- description: "Scenario voice: a casual chat reply keeps a warm, brief voice (not senior-engineer dryness)"
+  vars:
+    source_note: "Scenario classification must drive voice. A short team-chat message should read warm and brief, not as a dry, unapologetic engineering statement or a formal letter."
+    channel: "team chat"
+    human_reference: "Keep it short and friendly, like a teammate on Slack. Confirm the deploy is done and ask them to check their dashboards. Warm and brief, not formal or cold."
+    expected_distinction: "Team-chat voice is warm and brief; senior-engineer dryness reads cold here, and formal phrasing reads stiff."
+    draft: "I am writing to inform you that the deployment has been completed successfully. Please be advised to review your respective service dashboards at your earliest convenience and notify me should any anomalies be observed."
+  assert:
+    - type: javascript
+      metric: removes_formal_chat_padding
+      value: |
+        return !/i am writing to inform you/i.test(output) &&
+        !/at your earliest convenience/i.test(output) &&
+        !/please be advised/i.test(output) &&
+        !/should any anomalies be observed/i.test(output)
+    - type: javascript
+      metric: stays_brief
+      value: |
+        return output.trim().split(/\s+/).length <= 40
+    - type: llm-rubric
+      metric: warm_brief_chat_voice
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output reads like a short, warm team-chat message:
+        - it confirms the deploy is done and asks the reader to check dashboards,
+        - it is brief and conversational (Slack-style), not a formal letter,
+        - it is not dry or cold the way a terse engineering statement would be,
+        - it adds no new facts beyond deploy-done + check-dashboards + ping-me.

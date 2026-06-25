@@ -42,9 +42,20 @@ Read only what the task needs:
 - Prioritize authentic technical voice over detector evasion. Do not artificially inflate perplexity or burstiness scores to game AI detectors; natural sentence-length variation and precise word choice are legitimate writing goals.
 - If the input is already clean, say so and avoid unnecessary rewriting.
 
-## Senior Engineer Voice
+## Voice Profiles (per scenario)
 
-The positive target after humanization. Defines what to move toward, not only what to remove.
+Humanizing has two layers: **removing AI markers is universal** (every output gets it); **voice is per scenario** (selected by scenario classification — see workflow step 1). There is no single global target voice. A dry, unapologetic engineering voice is right for a design doc and wrong for a casual chat reply (reads cold) or a client email (reads rude).
+
+Each channel carries its own short voice profile. See `references/channel-style.md` for the per-channel profiles; the main ones:
+
+- **Team chat / casual** -> warm, brief, natural shorthand, one clear next step.
+- **Client email** -> professional, courteous, clear ask, no padding.
+- **Technical doc / design doc / PR review** -> *Senior Engineer Voice* (below).
+- **Release notes** -> neutral, factual, user-visible change first.
+
+### Senior Engineer Voice (one profile among several)
+
+The positive target for **engineering and technical** channels only — not a universal default.
 
 - **Lead with the constraint, not the category.** Do not say "there are performance considerations." Say "this will timeout after 30s under load."
 - **Opinions without apology.** A senior engineer takes positions. "I would use Postgres here" not "one option is Postgres."
@@ -52,11 +63,22 @@ The positive target after humanization. Defines what to move toward, not only wh
 - **Repetition over rotation.** Use the same precise term twice rather than inventing a synonym. "The cache" is always "the cache."
 - **Dry beats enthusiastic.** Understatement signals confidence. "This works" is stronger than "this is a powerful solution."
 
-Syntactic DNA governs rhythm (sentence length, punctuation habits, pacing). Senior Engineer Voice governs content decisions (what to lead with, claim scoping, position-taking). They operate on separate axes and do not conflict.
+Syntactic DNA governs rhythm (sentence length, punctuation habits, pacing). The selected voice profile governs content decisions (what to lead with, claim scoping, position-taking, warmth). They operate on separate axes and do not conflict.
 
 ## Humanize Workflow (STRIP -> PROTECT -> DRAFT -> RECURSE)
 
-1. **Identify** the target format and audience: document, email, message, PR, release note, technical doc, or other.
+1. **Classify the scenario** -- This is the first decision and it drives everything after it: **register and voice**. If the user names the channel, use it. Otherwise infer from signals; do not default to technical documentation.
+
+   **Signal checklist** (read the input, not the request):
+   - **Length**: a line or two -> chat; multiple paragraphs -> doc/email.
+   - **Greeting / sign-off present** ("Hi X", "Thanks,") -> email or message, not a doc.
+   - **Platform cues**: Slack/Teams shorthand, @mentions -> chat; "## headings", code fences -> technical doc; "## Changed/Fixed" -> release notes.
+   - **Person**: heavy 2nd person to an external reader -> client email; 1st-person team voice -> chat/PR.
+   - **Question vs statement**: a request/ask -> message or email; a record of decisions -> design doc.
+   - **Audience**: teammate, reviewer, client, end user, or public reader.
+
+   Map the scenario to its voice profile (see **Voice Profiles**) and load that channel's section from `references/channel-style.md`. Removing AI markers (STRIP) is universal regardless of scenario.
+
 2. **STRIP** -- Remove unconditionally on every pass: I1 (assistant service language), I2 (knowledge-cutoff disclaimers), I3 (placeholder residue), I4 ceremonial openers where they add no meaning, M1-M3 (markup leaks, broken citations, internal tokens). Also remove regardless of score: emoji (remove entirely), em dashes (replace with comma, colon, or parentheses), curly quotes (replace with straight ASCII quotes). See severity **High** in `references/ai-markers.md`.
 
    **Product copy channels:** Do not invent product names or brands not present in the source draft. If the draft has no product name, frame the product descriptively — e.g., "this double-walled travel mug," not an invented brand like "CommuterShield." A source pattern that describes a human example "adding a product name" licenses descriptive framing only; it is not permission to invent a name. Remove product-copy formula phrases (Perfect for, Ideal for, Introducing, Designed for) as AI markers.
@@ -113,7 +135,7 @@ Sampling never applies to text submitted for humanization. Only the user's own t
 ## Error Handling
 
 - **Draft has no AI markers**: Return the draft unchanged and note it is already clean.
-- **Channel is unknown**: Default to technical documentation register. Ask for the channel if register would materially change the rewrite.
+- **Channel is unknown**: Infer the scenario from the signal checklist in workflow step 1 (length, greeting/sign-off, platform cues, person, audience) and select its voice profile. Do not default to the technical documentation register. Ask for the channel only when the signals are genuinely ambiguous and the register would materially change the rewrite.
 - **writing-profile.json is missing or malformed**: Proceed without profile preferences. Do not create the file until the user gives an explicit preference or correction.
 - **Technical term not in `references/technical-terms.json`**: Treat unfamiliar domain terms as protected unless the user identifies them as AI marker vocabulary.
 - **Source claim cannot be verified**: Flag as source-integrity issue. Do not rewrite it to sound confident. See `references/source-and-markup-integrity.md`.
