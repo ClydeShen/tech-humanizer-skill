@@ -18,6 +18,8 @@ Use this skill for three jobs:
 
 ## Load Order
 
+**Preflight (do not skip):** before any rewrite of technical text, actually read the references — do not apply the skill from memory. At minimum load `references/ai-style-lexicon.json`, `references/technical-terms.json`, and the project `writing-profile.json` if one exists. Working from memory is how plain verbs get over-formalized (`get` -> `retrieve`) and protected terms get lost.
+
 Read only what the task needs:
 
 - Humanizing (RECURSE): read `references/bucket-quickref.md`.
@@ -85,6 +87,8 @@ Syntactic DNA governs rhythm (sentence length, punctuation habits, pacing). The 
 
 3. **PROTECT** -- Load `references/technical-terms.json` and `writing-profile.json` (including `syntactic_dna` when present). Lock protected terms and apply explicit preferences. Also lock verbatim-required phrases before drafting: safety instructions, legal scope terms, the draft's central claim. See `references/rewrite-playbook.md § Verbatim Preservation`.
 
+   **Generic skill, per-project terms.** The skill ships only generic terms in `references/technical-terms.json`. Project-specific vocabulary lives in the per-project `writing-profile.json` under `domain_terms`, which **extends** (does not replace) the generic list — the two are merged at load time, with `domain_terms` winning on conflict. Never add project-specific vocabulary, personas, or document types to the skill's own references.
+
    **Clinical/legal/safety terminology:** When a reference provides specific professional terms (e.g., "prescribing clinician", "hold harmless", "sentence-length diversity"), treat those as required verbatim — do not substitute colloquial or near-synonym equivalents. Reference terms take priority over synonyms in the draft: if the reference says "prescribing clinician," use that exact phrase even if the draft says "your doctor." These terms carry precision the author chose deliberately.
 
 4. **DRAFT** -- Rewrite with lead-fronting, active voice, and channel fit. Load `references/rewrite-playbook.md`, `references/final-rubric.md`, and `references/channel-style.md` when the channel is clear. Load `references/source-and-markup-integrity.md` when sources or markup matter.
@@ -129,6 +133,10 @@ The skill observes the user's own conversation messages to build `syntactic_dna`
 Syntactic DNA governs rhythm. Senior Engineer Voice governs content decisions. The two do not conflict.
 
 Explicit preferences (word choices, domain terms, corrections to skill output) are written to `writing-profile.json` immediately when stated.
+
+**Active capture (do not wait for "learn my style").** Write an `observations` entry (with a `confidence` field) whenever the user corrects, reverts, restates, or supplies their own writing — not only on an explicit request. Observations accumulate cheaply and promote to a `preference` or `syntactic_dna` entry once confidence or agreement crosses the threshold (the 3-session rule still governs `syntactic_dna` rhythm). When the user **reverts** an edit, record a `do_not_change` (negative preference) so the reverted change does not recur — capture the pattern, the reason, and an example. See `references/profile-schema.md`.
+
+Example: the user reverts `get -> retrieve` back to `get`. Write a `do_not_change` entry: pattern `get -> retrieve`, reason "plain verb, not jargon", example "get the project number". A future session reads it as a first-class block, not a comment.
 
 Sampling never applies to text submitted for humanization. Only the user's own typed messages qualify as style evidence.
 
