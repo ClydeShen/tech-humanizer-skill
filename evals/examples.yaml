@@ -297,3 +297,58 @@
 
         Pass only if the output reads like a concise engineer-written PR description.
         It must preserve the stated scope and avoid inventing implementation details, incidents, or vulnerabilities.
+
+- description: "Inflated-formality guard: plain verbs get/show up must not be formalised"
+  vars:
+    source_note: "The owner hit over-correction this session: the agent changed plain verbs (get->retrieve/obtain, show up->appear) that are not jargon. These are the inflated_formality anti-pattern and must be left alone."
+    channel: "team chat"
+    human_reference: "Keep the plain verbs exactly. Do not turn get into retrieve or obtain, and do not turn shows up into appears. The instruction is already clear and casual."
+    expected_distinction: "Human writing leaves ordinary verbs alone; AI over-formalises get/show up into ceremonial synonyms."
+    draft: "When you run the job, the function shows up in the logs. After that, get the project number from the header."
+  assert:
+    - type: javascript
+      metric: preserves_plain_verb_get
+      value: |
+        return /get the project number/i.test(output) &&
+        !/retrieve the project number/i.test(output) &&
+        !/obtain the project number/i.test(output)
+    - type: javascript
+      metric: preserves_plain_verb_show_up
+      value: |
+        return /shows up/i.test(output) &&
+        !/the function appears/i.test(output)
+
+- description: "Inflated-formality guard: plain verb open must not become access/navigate to"
+  vars:
+    source_note: "Plain UI verbs like open are not jargon; formalising open into access or navigate to is the inflated_formality anti-pattern the owner corrected."
+    channel: "team chat"
+    human_reference: "Keep open exactly. Do not turn open the console into access the console or navigate to the console."
+    expected_distinction: "Human instructions say open; AI over-formalises into access/navigate to."
+    draft: "To check the build, open the console and read the last line."
+  assert:
+    - type: javascript
+      metric: preserves_plain_verb_open
+      value: |
+        return /open the console/i.test(output) &&
+        !/access the console/i.test(output) &&
+        !/navigate to the console/i.test(output)
+
+- description: "Colloquial-jargon map: slang standing for a real technical concept becomes the term"
+  vars:
+    source_note: "The lexicon should map dev slang to its technical term in one direction only (slang->term): baked in -> set at build time. Standard event-driven phrasing (a trigger fires) is correct and must be preserved, not rewritten."
+    channel: "design doc"
+    human_reference: "Say the configuration is set at build time. Keep the deploy trigger fires phrasing as-is."
+    expected_distinction: "Human technical writing names the concept (set at build time) but preserves correct event phrasing (fires)."
+    draft: "The API key is baked into the build, and the deploy trigger fires on every push."
+  assert:
+    - type: javascript
+      metric: maps_slang_to_technical_term
+      value: |
+        return /set at build time/i.test(output) &&
+        !/baked into the build/i.test(output)
+    - type: javascript
+      metric: preserves_event_driven_phrasing
+      value: |
+        return /fires/i.test(output) &&
+        !/is triggered/i.test(output) &&
+        !/executes on every push/i.test(output)

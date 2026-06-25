@@ -24,6 +24,19 @@ Fail if:
 
 This gate takes priority over all style improvements. A rewrite that fails Gate 0 is wrong regardless of how human it sounds.
 
+### 0b. Do Not Inflate Ordinary Verbs
+
+Plain verbs are not AI markers. Formalizing them is the `inflated_formality` anti-pattern in `references/ai-style-lexicon.json` (the same list that flags `utilize`, `facilitate`, `commence`), applied to ordinary words.
+
+Fail if a plain verb was swapped for a ceremonial synonym:
+
+- `get` became `retrieve` or `obtain`;
+- `show up` / `shows up` became `appear`;
+- `open` became `access` or `navigate to`;
+- `find`, `run`, `read`, `use`, `set up` were similarly inflated.
+
+Keep these verbs verbatim. See `colloquial_jargon._meta.never_formalize` for the protected list. The legitimate direction is the opposite one: dev slang that stands in for a real technical concept (`baked into the build` -> `set at build time`) may be mapped to its term, one direction only. Standard event-driven phrasing (a trigger `fires`) is correct and must be preserved, not rewritten.
+
 ### 1. Meaning Preservation
 
 Pass if:
