@@ -65,3 +65,6 @@ desktop.ini
 # Harness ephemeral resume context
 .harness/phases/*/.continue-here.json
 .claude/handoff.md
+
+# Local MCP server config (points at a local hub)
+.mcp.json
