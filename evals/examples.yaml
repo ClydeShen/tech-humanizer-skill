@@ -309,9 +309,9 @@
     - type: javascript
       metric: preserves_plain_verb_get
       value: |
-        return /get the project number/i.test(output) &&
-        !/retrieve the project number/i.test(output) &&
-        !/obtain the project number/i.test(output)
+        return /\bget\b/i.test(output) &&
+        !/retrieve/i.test(output) &&
+        !/obtain/i.test(output)
     - type: javascript
       metric: preserves_plain_verb_show_up
       value: |
@@ -371,7 +371,8 @@
     - type: javascript
       metric: stays_brief
       value: |
-        return output.trim().split(/\s+/).length <= 40
+        const wordCount = output.trim().split(/\s+/).length;
+        return wordCount <= 40;
     - type: llm-rubric
       metric: warm_brief_chat_voice
       value: |
