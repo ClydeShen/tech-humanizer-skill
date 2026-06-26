@@ -1,7 +1,7 @@
 ---
 name: tech-humanizer-skill
 description: Use this skill when the user asks to humanize, rewrite, de-AI, polish, or detect AI writing in documents, emails, chat messages, pull request text, release notes, technical docs, or other prose. It removes AI-writing markers while preserving technical terminology, reports AI-marker density with concrete fixes, and learns the user's wording preferences, domain terms, and recurring writing habits over time. Don't use for grammar correction unrelated to AI markers, original content generation, fact-checking source material, or translating between languages.
-version: 2.1.0
+version: 2.2.0
 author: ClydeShen
 license: MIT
 ---
@@ -17,6 +17,8 @@ Use this skill for three jobs:
 - **Learn style**: maintain a local writing profile for user preferences, domain terms, syntactic DNA, and recurring corrections.
 
 ## Load Order
+
+**Preflight (do not skip):** before any rewrite of technical text, actually read the references — do not apply the skill from memory. At minimum load `references/ai-style-lexicon.json`, `references/technical-terms.json`, and the project `writing-profile.json` if one exists. Working from memory is how plain verbs get over-formalized (`get` -> `retrieve`) and protected terms get lost.
 
 Read only what the task needs:
 
@@ -42,9 +44,20 @@ Read only what the task needs:
 - Prioritize authentic technical voice over detector evasion. Do not artificially inflate perplexity or burstiness scores to game AI detectors; natural sentence-length variation and precise word choice are legitimate writing goals.
 - If the input is already clean, say so and avoid unnecessary rewriting.
 
-## Senior Engineer Voice
+## Voice Profiles (per scenario)
 
-The positive target after humanization. Defines what to move toward, not only what to remove.
+Humanizing has two layers: **removing AI markers is universal** (every output gets it); **voice is per scenario** (selected by scenario classification — see workflow step 1). There is no single global target voice. A dry, unapologetic engineering voice is right for a design doc and wrong for a casual chat reply (reads cold) or a client email (reads rude).
+
+Each channel carries its own short voice profile. See `references/channel-style.md` for the per-channel profiles; the main ones:
+
+- **Team chat / casual** -> warm, brief, natural shorthand, one clear next step.
+- **Client email** -> professional, courteous, clear ask, no padding.
+- **Technical doc / design doc / PR review** -> *Senior Engineer Voice* (below).
+- **Release notes** -> neutral, factual, user-visible change first.
+
+### Senior Engineer Voice (one profile among several)
+
+The positive target for **engineering and technical** channels only — not a universal default.
 
 - **Lead with the constraint, not the category.** Do not say "there are performance considerations." Say "this will timeout after 30s under load."
 - **Opinions without apology.** A senior engineer takes positions. "I would use Postgres here" not "one option is Postgres."
@@ -52,16 +65,29 @@ The positive target after humanization. Defines what to move toward, not only wh
 - **Repetition over rotation.** Use the same precise term twice rather than inventing a synonym. "The cache" is always "the cache."
 - **Dry beats enthusiastic.** Understatement signals confidence. "This works" is stronger than "this is a powerful solution."
 
-Syntactic DNA governs rhythm (sentence length, punctuation habits, pacing). Senior Engineer Voice governs content decisions (what to lead with, claim scoping, position-taking). They operate on separate axes and do not conflict.
+Syntactic DNA governs rhythm (sentence length, punctuation habits, pacing). The selected voice profile governs content decisions (what to lead with, claim scoping, position-taking, warmth). They operate on separate axes and do not conflict.
 
 ## Humanize Workflow (STRIP -> PROTECT -> DRAFT -> RECURSE)
 
-1. **Identify** the target format and audience: document, email, message, PR, release note, technical doc, or other.
+1. **Classify the scenario** -- This is the first decision and it drives everything after it: **register and voice**. If the user names the channel, use it. Otherwise infer from signals; do not default to technical documentation.
+
+   **Signal checklist** (read the input, not the request):
+   - **Length**: a line or two -> chat; multiple paragraphs -> doc/email.
+   - **Greeting / sign-off present** ("Hi X", "Thanks,") -> email or message, not a doc.
+   - **Platform cues**: Slack/Teams shorthand, @mentions -> chat; "## headings", code fences -> technical doc; "## Changed/Fixed" -> release notes.
+   - **Person**: heavy 2nd person to an external reader -> client email; 1st-person team voice -> chat/PR.
+   - **Question vs statement**: a request/ask -> message or email; a record of decisions -> design doc.
+   - **Audience**: teammate, reviewer, client, end user, or public reader.
+
+   Map the scenario to its voice profile (see **Voice Profiles**) and load that channel's section from `references/channel-style.md`. Removing AI markers (STRIP) is universal regardless of scenario.
+
 2. **STRIP** -- Remove unconditionally on every pass: I1 (assistant service language), I2 (knowledge-cutoff disclaimers), I3 (placeholder residue), I4 ceremonial openers where they add no meaning, M1-M3 (markup leaks, broken citations, internal tokens). Also remove regardless of score: emoji (remove entirely), em dashes (replace with comma, colon, or parentheses), curly quotes (replace with straight ASCII quotes). See severity **High** in `references/ai-markers.md`.
 
    **Product copy channels:** Do not invent product names or brands not present in the source draft. If the draft has no product name, frame the product descriptively — e.g., "this double-walled travel mug," not an invented brand like "CommuterShield." A source pattern that describes a human example "adding a product name" licenses descriptive framing only; it is not permission to invent a name. Remove product-copy formula phrases (Perfect for, Ideal for, Introducing, Designed for) as AI markers.
 
 3. **PROTECT** -- Load `references/technical-terms.json` and `writing-profile.json` (including `syntactic_dna` when present). Lock protected terms and apply explicit preferences. Also lock verbatim-required phrases before drafting: safety instructions, legal scope terms, the draft's central claim. See `references/rewrite-playbook.md § Verbatim Preservation`.
+
+   **Generic skill, per-project terms.** The skill ships only generic terms in `references/technical-terms.json`. Project-specific vocabulary lives in the per-project `writing-profile.json` under `domain_terms`, which **extends** (does not replace) the generic list — the two are merged at load time, with `domain_terms` winning on conflict. Never add project-specific vocabulary, personas, or document types to the skill's own references.
 
    **Clinical/legal/safety terminology:** When a reference provides specific professional terms (e.g., "prescribing clinician", "hold harmless", "sentence-length diversity"), treat those as required verbatim — do not substitute colloquial or near-synonym equivalents. Reference terms take priority over synonyms in the draft: if the reference says "prescribing clinician," use that exact phrase even if the draft says "your doctor." These terms carry precision the author chose deliberately.
 
@@ -108,12 +134,16 @@ Syntactic DNA governs rhythm. Senior Engineer Voice governs content decisions. T
 
 Explicit preferences (word choices, domain terms, corrections to skill output) are written to `writing-profile.json` immediately when stated.
 
+**Active capture (do not wait for "learn my style").** Write an `observations` entry (with a `confidence` field) whenever the user corrects, reverts, restates, or supplies their own writing — not only on an explicit request. Observations accumulate cheaply and promote to a `preference` or `syntactic_dna` entry once confidence or agreement crosses the threshold (the 3-session rule still governs `syntactic_dna` rhythm). When the user **reverts** an edit, record a `do_not_change` (negative preference) so the reverted change does not recur — capture the pattern, the reason, and an example. See `references/profile-schema.md`.
+
+Example: the user reverts `get -> retrieve` back to `get`. Write a `do_not_change` entry: pattern `get -> retrieve`, reason "plain verb, not jargon", example "get the project number". A future session reads it as a first-class block, not a comment.
+
 Sampling never applies to text submitted for humanization. Only the user's own typed messages qualify as style evidence.
 
 ## Error Handling
 
 - **Draft has no AI markers**: Return the draft unchanged and note it is already clean.
-- **Channel is unknown**: Default to technical documentation register. Ask for the channel if register would materially change the rewrite.
+- **Channel is unknown**: Infer the scenario from the signal checklist in workflow step 1 (length, greeting/sign-off, platform cues, person, audience) and select its voice profile. Do not default to the technical documentation register. When the scenario genuinely cannot be inferred, fall back to a neutral, factual register (never senior-engineer) and, if the choice would materially change the rewrite, ask or hedge rather than silently picking a voice.
 - **writing-profile.json is missing or malformed**: Proceed without profile preferences. Do not create the file until the user gives an explicit preference or correction.
 - **Technical term not in `references/technical-terms.json`**: Treat unfamiliar domain terms as protected unless the user identifies them as AI marker vocabulary.
 - **Source claim cannot be verified**: Flag as source-integrity issue. Do not rewrite it to sound confident. See `references/source-and-markup-integrity.md`.

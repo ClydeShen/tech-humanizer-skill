@@ -14,6 +14,9 @@ Rules:
 - If source pattern or reference cites a named study, author, or corpus, scope every empirical claim to that source. Do not add evaluative conclusion sentences not in the draft or reference.
 - If the reference asks for a point of view or opinion, express one — do not simply restate the claim neutrally.
 - For forum and conversational channels, include at least one sentence under 10 words alongside longer ones to create rhythm.
+- Do not inflate ordinary verbs. Keep plain verbs exactly: get (not retrieve/obtain), find, open (not access/navigate to), show up / shows up (not appears), run, read, use, set up.
+- When dev slang stands in for a real technical concept, replace it with the concept's term, one direction only: "baked into the build" -> "set at build time", "spin up" -> "deploy", "wire up" -> "integrate", "under the hood" -> "internally". Never run this in reverse.
+- Preserve standard event-driven phrasing verbatim: a trigger "fires" stays "fires".
 - Match the channel: {{channel}}.
 - Return only the rewritten text.
 

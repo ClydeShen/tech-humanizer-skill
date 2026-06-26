@@ -165,6 +165,24 @@ After when values are unknown:
 Please review the migration by the agreed deadline.
 ```
 
+### Dev Slang to Technical Term (one direction only)
+
+When dev slang stands in for a real technical concept, map it to the concept's term. This runs **one direction only** (slang -> term). Never run it in reverse to make good documentation casual. See `references/ai-style-lexicon.json` `colloquial_jargon`.
+
+Before:
+
+```text
+The API key is baked into the build, and we spin up a worker under the hood.
+```
+
+After:
+
+```text
+The API key is set at build time, and we deploy a worker internally.
+```
+
+**Do not inflate ordinary verbs.** Plain verbs — `get`, `find`, `open`, `show up`, `run`, `read`, `use`, `set up` — are not slang and not AI markers. Leave them exactly. `get the project number` stays `get the project number` (not `retrieve` or `obtain`); `open the console` stays `open the console` (not `access` or `navigate to`); `the function shows up in the logs` keeps `shows up` (not `appears`). Standard event-driven phrasing — a trigger `fires` — is correct and stays verbatim.
+
 ### False Specificity to Evidence Boundary
 
 Before:
@@ -221,3 +239,5 @@ Human writing is not made better by adding typos, slang, or randomness. Use cont
 - Do not remove useful warnings or legal/security qualifiers.
 - Do not replace every flagged word mechanically.
 - Do not make the text choppy just to avoid polish.
+- Do not inflate ordinary verbs (`get`, `find`, `open`, `show up`, `run`, `read`, `use`) into ceremonial synonyms; that is the `inflated_formality` anti-pattern applied to plain words.
+- Do not run the dev-slang map in reverse; never turn a technical term back into slang.
