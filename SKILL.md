@@ -143,7 +143,7 @@ Sampling never applies to text submitted for humanization. Only the user's own t
 ## Error Handling
 
 - **Draft has no AI markers**: Return the draft unchanged and note it is already clean.
-- **Channel is unknown**: Infer the scenario from the signal checklist in workflow step 1 (length, greeting/sign-off, platform cues, person, audience) and select its voice profile. Do not default to the technical documentation register. Ask for the channel only when the signals are genuinely ambiguous and the register would materially change the rewrite.
+- **Channel is unknown**: Infer the scenario from the signal checklist in workflow step 1 (length, greeting/sign-off, platform cues, person, audience) and select its voice profile. Do not default to the technical documentation register. When the scenario genuinely cannot be inferred, fall back to a neutral, factual register (never senior-engineer) and, if the choice would materially change the rewrite, ask or hedge rather than silently picking a voice.
 - **writing-profile.json is missing or malformed**: Proceed without profile preferences. Do not create the file until the user gives an explicit preference or correction.
 - **Technical term not in `references/technical-terms.json`**: Treat unfamiliar domain terms as protected unless the user identifies them as AI marker vocabulary.
 - **Source claim cannot be verified**: Flag as source-integrity issue. Do not rewrite it to sound confident. See `references/source-and-markup-integrity.md`.
