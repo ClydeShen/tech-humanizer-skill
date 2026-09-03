@@ -18,7 +18,7 @@ tech-humanizer-skill is a Claude Code skill for detecting and removing AI-writin
 | RECURSE pass | Additional pass that checks output against the full marker inventory |
 | Bucket | Marker category grouping (see `references/bucket-quickref.md`) |
 | Writing profile | Project-local `writing-profile.json`: `domain_terms` only, scoped to one project |
-| User profile | Global `user-profile.json` (`~/.claude/tech-humanizer/`): wording preferences, syntactic DNA, corrections — shared across every project |
+| User profile | Global `user-profile.json` (`~/.tech-humanizer/`): wording preferences, syntactic DNA, corrections — shared across every project |
 | Reader language level | Explicit-only axis (see `references/reader-level.md`) that adjusts sentence syntax for a stated non-native audience without touching terminology |
 
 ## Decisions

@@ -2,7 +2,7 @@
 
 The skill maintains two files, split by scope:
 
-- **`~/.claude/tech-humanizer/user-profile.json`** -- the user's own writing habits: `preferences`, `style_notes`, `recurring_patterns`, `syntactic_dna`, `observations`, `do_not_change`. This is how a person writes, not what any one project is about. It applies across every project and is never project-specific.
+- **`~/.tech-humanizer/user-profile.json`** -- the user's own writing habits: `preferences`, `style_notes`, `recurring_patterns`, `syntactic_dna`, `observations`, `do_not_change`. This is how a person writes, not what any one project is about. It applies across every project and is never project-specific.
 - **`writing-profile.json`** in the project's current working directory -- `domain_terms` only. This is the project's own vocabulary (e.g., "canary deployment"), which is meaningless or actively wrong outside that project. Keep it out of the global file so one project's jargon never surfaces in another.
 
 Before writing to either file, check `references/ai-markers.md` and `references/ai-style-lexicon.json` for a built-in rule that already covers the correction (e.g., a user rejecting a decorative unicode bullet -- see S12). If a built-in rule already covers it, apply that rule and skip the profile write; relearning a universal marker per user duplicates what the skill already knows.
@@ -50,7 +50,7 @@ This does not apply to genuinely one-off word preferences (`utilize -> use` is a
 
 ## Schema
 
-### `~/.claude/tech-humanizer/user-profile.json` (global, cross-project)
+### `~/.tech-humanizer/user-profile.json` (global, cross-project)
 
 ```json
 {

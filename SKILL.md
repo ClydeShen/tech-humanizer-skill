@@ -1,7 +1,7 @@
 ---
 name: tech-humanizer-skill
 description: Use this skill when the user asks to humanize, rewrite, de-AI, polish, or detect AI writing in documents, emails, chat messages, pull request text, release notes, technical docs, or other prose. It removes AI-writing markers while preserving technical terminology, reports AI-marker density with concrete fixes, and learns the user's wording preferences, domain terms, and recurring writing habits over time. Don't use for grammar correction unrelated to AI markers, original content generation, fact-checking source material, or translating between languages.
-version: 2.3.0
+version: 2.4.0
 author: ClydeShen
 license: MIT
 ---
@@ -18,7 +18,7 @@ Use this skill for three jobs:
 
 ## Load Order
 
-**Preflight (do not skip):** before any rewrite of technical text, actually read the references — do not apply the skill from memory. At minimum load `references/ai-style-lexicon.json`, `references/technical-terms.json`, `~/.claude/tech-humanizer/user-profile.json` if one exists (personal writing habits, shared across all projects), and the project's `writing-profile.json` if one exists (domain terms local to this project only). Working from memory is how plain verbs get over-formalized (`get` -> `retrieve`) and protected terms get lost.
+**Preflight (do not skip):** before any rewrite of technical text, actually read the references — do not apply the skill from memory. At minimum load `references/ai-style-lexicon.json`, `references/technical-terms.json`, `~/.tech-humanizer/user-profile.json` if one exists (personal writing habits, shared across all projects), and the project's `writing-profile.json` if one exists (domain terms local to this project only). Working from memory is how plain verbs get over-formalized (`get` -> `retrieve`) and protected terms get lost.
 
 Read only what the task needs:
 
@@ -136,7 +136,7 @@ Changes:
 
 ## Style Learning
 
-The skill builds `syntactic_dna` in `user-profile.json` (`~/.claude/tech-humanizer/`, shared across every project) from two kinds of evidence: the user's own conversation messages (2+ complete sentences, 30+ words triggers sampling), and documents or pasted text the user explicitly flags as their own writing. A flagged document is worth actively asking for -- when a user wants their voice learned quickly rather than over several sessions, ask them to paste or share a few paragraphs they wrote themselves. The skill extracts descriptive structural observations, not numeric measurements, spanning both sentence-level rhythm (length variation, punctuation habits, pacing) and passage-level habits (what the user leads with, how they sequence claim and justification, where caveats land). A pattern is committed to `syntactic_dna` only after 3 independent observations agree -- see `references/profile-schema.md` **Syntactic DNA sourcing rules** for what counts as independent.
+The skill builds `syntactic_dna` in `user-profile.json` (`~/.tech-humanizer/`, shared across every project) from two kinds of evidence: the user's own conversation messages (2+ complete sentences, 30+ words triggers sampling), and documents or pasted text the user explicitly flags as their own writing. A flagged document is worth actively asking for -- when a user wants their voice learned quickly rather than over several sessions, ask them to paste or share a few paragraphs they wrote themselves. The skill extracts descriptive structural observations, not numeric measurements, spanning both sentence-level rhythm (length variation, punctuation habits, pacing) and passage-level habits (what the user leads with, how they sequence claim and justification, where caveats land). A pattern is committed to `syntactic_dna` only after 3 independent observations agree -- see `references/profile-schema.md` **Syntactic DNA sourcing rules** for what counts as independent.
 
 See **Voice Profiles** above for how syntactic_dna and the selected voice profile interact, and `references/profile-schema.md` for the full schema.
 
