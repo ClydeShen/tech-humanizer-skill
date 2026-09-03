@@ -42,19 +42,19 @@ Stop shipping PRs and docs that sound like they were written by a generic assist
 3. **Recursive check:** re-evaluates the output against a rubric to confirm the result reads like a human wrote it.
 
 ```mermaid
-flowchart TD
-    A[Draft text] --> B{Classify scenario:<br/>chat, email, doc, PR, release notes...}
-    B --> C[STRIP<br/>remove AI residue: assistant tone,<br/>disclaimers, emoji, decorative markup]
-    C --> D[PROTECT<br/>lock technical terms, domain vocabulary,<br/>and the user's own wording preferences]
-    D --> E[DRAFT<br/>rewrite for the channel's voice]
-    E --> F{RECURSE<br/>score remaining markers}
-    F -->|above threshold, under 3 passes| E
-    F -->|below threshold| G[Final rubric check]
-    G --> I{Capture learning signals:<br/>correction, revert, restatement,<br/>or a flagged writing sample?}
-    I -->|yes| J[Write to user/project profile]
-    I -->|no| H
-    J --> H[Humanized output]
+flowchart LR
+    subgraph Each time you ask
+        direction LR
+        A[Your text] --> B[Clean up AI-ish phrasing,<br/>protect technical terms] --> C[Rewrite in your voice] --> D{Still sounds robotic?}
+        D -->|yes| C
+        D -->|no| Out[Humanized text]
+    end
+    Profile[("What it remembers about you:<br/>your wording, your team's terms")]
+    Profile -. shapes the rewrite .-> B
+    Out -. your corrections teach it .-> Profile
 ```
+
+Two loops running at two speeds: the inner one polishes a single rewrite until it stops sounding robotic. The dashed loop is slower and is what makes the skill self-learning — correcting it now only changes the *next* rewrite, not this one, because it has to remember the correction first.
 
 This diagram is illustrative. The authoritative rules — thresholds, exemptions, per-channel voice, and the full marker list — live in [`SKILL.md`](SKILL.md) and `references/`.
 
