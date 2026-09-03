@@ -15,7 +15,7 @@ Stop shipping PRs and docs that sound like they were written by a generic assist
 
 - Protects technical depth: shields terms like `Kubernetes`, `OAuth 2.0`, `JWT`, and `CI/CD` from being simplified into vague filler.
 - Grounded in methodology: uses a community-driven field guide based on [Wikipedia's AI markers](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) to identify and fix specific tells.
-- Learns your voice: maintains a local `writing-profile.json` that tracks your team's nomenclature and personal style preferences. No black boxes.
+- Learns your voice: maintains a local `writing-profile.json` per project for your team's nomenclature, plus a global `user-profile.json` for your own personal style preferences that follows you across every project. No black boxes.
 - Context-aware: a PR description needs impact; a Slack message needs brevity; a technical doc needs precision.
 
 ## Before and after: real engineering scenarios
@@ -41,6 +41,23 @@ Stop shipping PRs and docs that sound like they were written by a generic assist
 2. **Technical shielding:** cross-references with local lexicons to keep protected terms verbatim.
 3. **Recursive check:** re-evaluates the output against a rubric to confirm the result reads like a human wrote it.
 
+```mermaid
+flowchart LR
+    subgraph Each time you ask
+        direction LR
+        A[Your text] --> B[Clean up AI-ish phrasing,<br/>protect technical terms] --> C[Rewrite in your voice] --> D{Still sounds robotic?}
+        D -->|yes| C
+        D -->|no| Out[Humanized text]
+    end
+    Profile[("What it remembers about you:<br/>your wording, your team's terms")]
+    Profile -. shapes the rewrite .-> B
+    Out -. your corrections teach it .-> Profile
+```
+
+Two loops running at two speeds: the inner one polishes a single rewrite until it stops sounding robotic. The dashed loop is slower and is what makes the skill self-learning — correcting it now only changes the *next* rewrite, not this one, because it has to remember the correction first.
+
+This diagram is illustrative. The authoritative rules — thresholds, exemptions, per-channel voice, and the full marker list — live in [`SKILL.md`](SKILL.md) and `references/`.
+
 ## Installation
 
 ### Add to your project
@@ -64,11 +81,12 @@ This skill uses the standard `SKILL.md` layout and is compatible with:
 
 ## Writing profile: local and transparent
 
-Unlike cloud humanizers, this skill uses a local `writing-profile.json` in your project root. It is private, ignored by Git, and lets you:
+Unlike cloud humanizers, this skill splits what it learns across two local, private files instead of a cloud account:
 
-- Define nomenclature: "Always use *Registry*, never *Store*."
-- Store samples: give the skill a few of your own sentences to match your register.
-- Internalize corrections: if you correct an AI word twice, the skill will not use it again.
+- **`writing-profile.json`**, in your project root, ignored by Git — your team's nomenclature. Define nomenclature: "Always use *Registry*, never *Store*."
+- **`user-profile.json`**, at `~/.claude/tech-humanizer/`, shared across every project — your own personal style. Store samples: give the skill a few of your own sentences to match your register. Internalize corrections: if you correct an AI word twice, the skill will not use it again, in this project or any other.
+
+Keeping them separate means your personal writing habits travel with you between projects, while one project's internal jargon never leaks into another.
 
 ## Project links
 

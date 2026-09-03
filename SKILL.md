@@ -1,7 +1,7 @@
 ---
 name: tech-humanizer-skill
 description: Use this skill when the user asks to humanize, rewrite, de-AI, polish, or detect AI writing in documents, emails, chat messages, pull request text, release notes, technical docs, or other prose. It removes AI-writing markers while preserving technical terminology, reports AI-marker density with concrete fixes, and learns the user's wording preferences, domain terms, and recurring writing habits over time. Don't use for grammar correction unrelated to AI markers, original content generation, fact-checking source material, or translating between languages.
-version: 2.2.0
+version: 2.3.0
 author: ClydeShen
 license: MIT
 ---
@@ -18,7 +18,7 @@ Use this skill for three jobs:
 
 ## Load Order
 
-**Preflight (do not skip):** before any rewrite of technical text, actually read the references — do not apply the skill from memory. At minimum load `references/ai-style-lexicon.json`, `references/technical-terms.json`, and the project `writing-profile.json` if one exists. Working from memory is how plain verbs get over-formalized (`get` -> `retrieve`) and protected terms get lost.
+**Preflight (do not skip):** before any rewrite of technical text, actually read the references — do not apply the skill from memory. At minimum load `references/ai-style-lexicon.json`, `references/technical-terms.json`, `~/.claude/tech-humanizer/user-profile.json` if one exists (personal writing habits, shared across all projects), and the project's `writing-profile.json` if one exists (domain terms local to this project only). Working from memory is how plain verbs get over-formalized (`get` -> `retrieve`) and protected terms get lost.
 
 Read only what the task needs:
 
@@ -26,6 +26,7 @@ Read only what the task needs:
 - Humanizing or detection (detail): read `references/ai-markers.md`.
 - Humanizing output: also read `references/rewrite-playbook.md` and `references/final-rubric.md`.
 - Channel-specific rewrites: read `references/channel-style.md`.
+- User states the audience's language level or non-native status: also read `references/reader-level.md`.
 - Text with citations, links, Markdown, HTML, wiki markup, or source claims: read `references/source-and-markup-integrity.md`.
 - Strict marker lookup or scripted scanning: read `references/ai-style-lexicon.json`.
 - Technical or product text: also read `references/technical-terms.json`.
@@ -42,7 +43,6 @@ Read only what the task needs:
 - Match the target channel: a Slack message should sound different from a client report, release note, or engineering design doc.
 - Keep the user's intent and risk posture. Do not soften warnings, remove constraints, or alter commitments.
 - Prioritize authentic technical voice over detector evasion. Do not artificially inflate perplexity or burstiness scores to game AI detectors; natural sentence-length variation and precise word choice are legitimate writing goals.
-- If the input is already clean, say so and avoid unnecessary rewriting.
 
 ## Voice Profiles (per scenario)
 
@@ -65,7 +65,7 @@ The positive target for **engineering and technical** channels only — not a un
 - **Repetition over rotation.** Use the same precise term twice rather than inventing a synonym. "The cache" is always "the cache."
 - **Dry beats enthusiastic.** Understatement signals confidence. "This works" is stronger than "this is a powerful solution."
 
-Syntactic DNA governs rhythm (sentence length, punctuation habits, pacing). The selected voice profile governs content decisions (what to lead with, claim scoping, position-taking, warmth). They operate on separate axes and do not conflict.
+Syntactic DNA governs rhythm and passage-level structure (sentence length, punctuation habits, pacing, what this user characteristically leads with). The selected voice profile governs content decisions (claim scoping, position-taking, warmth) where syntactic_dna is silent. The two mostly operate on separate axes; where they do overlap (e.g., what to lead with), a captured syntactic_dna habit for this specific user wins over the generic voice profile default.
 
 ## Humanize Workflow (STRIP -> PROTECT -> DRAFT -> RECURSE)
 
@@ -79,15 +79,25 @@ Syntactic DNA governs rhythm (sentence length, punctuation habits, pacing). The 
    - **Question vs statement**: a request/ask -> message or email; a record of decisions -> design doc.
    - **Audience**: teammate, reviewer, client, end user, or public reader.
 
+   **Disambiguate within engineering voice.** Technical doc, Design doc/RFC, PR description, and PR review comment all share Senior Engineer Voice, so "## headings, code fences" alone under-determines which one this is. Break the tie with structure, not just tone:
+   - **PR description**: what changed / why / how it was tested; often has a diff or file list as context.
+   - **PR review comment**: short (1-3 sentences), addressed to a specific line or change, names a requested action.
+   - **Design doc / RFC**: contains a decision, named alternatives, or a tradeoffs section; written before the change exists, not after.
+   - **Technical doc**: describes how something works or how to use it; no "why we chose X over Y" framing.
+
+   If two channels still tie after this check, ask which one rather than silently picking. Do not default to technical documentation.
+
    Map the scenario to its voice profile (see **Voice Profiles**) and load that channel's section from `references/channel-style.md`. Removing AI markers (STRIP) is universal regardless of scenario.
 
-2. **STRIP** -- Remove unconditionally on every pass: I1 (assistant service language), I2 (knowledge-cutoff disclaimers), I3 (placeholder residue), I4 ceremonial openers where they add no meaning, M1-M3 (markup leaks, broken citations, internal tokens). Also remove regardless of score: emoji (remove entirely), em dashes (replace with comma, colon, or parentheses), curly quotes (replace with straight ASCII quotes). See severity **High** in `references/ai-markers.md`.
+   **Reader language level (separate axis, explicit only).** If the user states the audience's English level or non-native status (e.g., "for a B1 team", "readers are non-native engineers"), also load `references/reader-level.md` and apply it alongside the channel voice -- it adjusts sentence structure only, never technical-term density. Never infer a reader's language level from the text itself; apply this axis only when the user states it.
+
+2. **STRIP** -- Remove unconditionally on every pass: I1 (assistant service language), I2 (knowledge-cutoff disclaimers), I3 (placeholder residue), I4 ceremonial openers where they add no meaning, M1-M3 (markup leaks, broken citations, internal tokens). Also remove regardless of score: emoji (remove entirely), em dashes (replace with comma, colon, or parentheses), curly quotes (replace with straight ASCII quotes), S12 decorative unicode enumeration glyphs -- bullet dots, circled numbers, geometric arrows -- (replace with standard Markdown lists). See severity **High** in `references/ai-markers.md`.
 
    **Product copy channels:** Do not invent product names or brands not present in the source draft. If the draft has no product name, frame the product descriptively — e.g., "this double-walled travel mug," not an invented brand like "CommuterShield." A source pattern that describes a human example "adding a product name" licenses descriptive framing only; it is not permission to invent a name. Remove product-copy formula phrases (Perfect for, Ideal for, Introducing, Designed for) as AI markers.
 
-3. **PROTECT** -- Load `references/technical-terms.json` and `writing-profile.json` (including `syntactic_dna` when present). Lock protected terms and apply explicit preferences. Also lock verbatim-required phrases before drafting: safety instructions, legal scope terms, the draft's central claim. See `references/rewrite-playbook.md § Verbatim Preservation`.
+3. **PROTECT** -- Load `references/technical-terms.json`, the project's `writing-profile.json` (`domain_terms`), and `user-profile.json` (`syntactic_dna` and other personal fields, when present). Lock protected terms and apply explicit preferences. Also lock verbatim-required phrases before drafting: safety instructions, legal scope terms, the draft's central claim. See `references/rewrite-playbook.md § Verbatim Preservation` and `§ User Correction Handling`.
 
-   **Generic skill, per-project terms.** The skill ships only generic terms in `references/technical-terms.json`. Project-specific vocabulary lives in the per-project `writing-profile.json` under `domain_terms`, which **extends** (does not replace) the generic list — the two are merged at load time, with `domain_terms` winning on conflict. Never add project-specific vocabulary, personas, or document types to the skill's own references.
+   **Generic skill, per-project terms.** The skill ships only generic terms in `references/technical-terms.json`. Project-specific vocabulary lives in the per-project `writing-profile.json` under `domain_terms`, which **extends** (does not replace) the generic list — the two are merged at load time, with `domain_terms` winning on conflict. Never add project-specific vocabulary, personas, or document types to the skill's own references, and never write `domain_terms` to `user-profile.json` — it stays project-local.
 
    **Clinical/legal/safety terminology:** When a reference provides specific professional terms (e.g., "prescribing clinician", "hold harmless", "sentence-length diversity"), treat those as required verbatim — do not substitute colloquial or near-synonym equivalents. Reference terms take priority over synonyms in the draft: if the reference says "prescribing clinician," use that exact phrase even if the draft says "your doctor." These terms carry precision the author chose deliberately.
 
@@ -99,10 +109,7 @@ Syntactic DNA governs rhythm (sentence length, punctuation habits, pacing). The 
 
    **Study claim scoping:** When source material references a specific corpus, study, or named author, keep every empirical claim scoped to that source. Preserve comparison entities from the draft (e.g., do not replace "ChatGPT" with "other writing"). Do not add evaluative conclusion sentences that generalize beyond the stated findings.
 
-   **Claim Scoping:** When a claim meets all three conditions, narrow its logical scope (do not add hedging qualifiers): (1) uses absolute certainty language such as always, never, definitely, it is clear, universally; (2) no supporting evidence appears within 2 sentences; (3) the claim is empirical -- about measurable behavior or facts, not a stated design decision or preference. Design decisions and stated preferences are protected even without evidence.
-
-   - Before: "This approach always outperforms the naive implementation."
-   - After: "This approach outperformed the naive implementation in our load tests."
+   **Claim Scoping:** narrow unsupported absolute-certainty claims. See `references/rewrite-playbook.md § Absolute Certainty to Scoped Claim` for the three-condition test and a worked example.
 
    **Evidence gate:** Strengthen claims that have citations or supplied data. Delete filler hedging (it is important to note). Do not soften security warnings, legal qualifiers, or user-stated commitments.
 
@@ -113,7 +120,8 @@ Syntactic DNA governs rhythm (sentence length, punctuation habits, pacing). The 
    - document score >= 12 pts.
    Repair the highest-scoring bucket first. Maximum **3 passes**. Stop when below threshold.
 6. **Final check** -- Run `references/final-rubric.md`. Revise if any required gate fails.
-7. **Return** the rewritten text only (silent output). Append a Changes list only if the user asked for explanation.
+7. **Capture learning signals** -- Before returning, check the user's messages from this turn against the four trigger types defined in **Style Learning** below. This check is mandatory every turn, not only when the user says "learn my style." Completion criterion: all four trigger types have been explicitly checked against this turn's messages -- if none apply, that is a checked no-op, not a skipped step. Write the resulting profile entry before moving to step 8.
+8. **Return** the rewritten text only (silent output). Append a Changes list only if the user asked for explanation.
 
 ### Humanize Output
 
@@ -128,23 +136,25 @@ Changes:
 
 ## Style Learning
 
-The skill observes the user's own conversation messages to build `syntactic_dna` in `writing-profile.json`. Sampling triggers when a user message contains 2 or more complete sentences totalling 30 or more words. The skill extracts descriptive structural observations (rhythm patterns, punctuation habits, voice register), not numeric measurements. A pattern is committed to `syntactic_dna` only after 3 independent session observations agree.
+The skill builds `syntactic_dna` in `user-profile.json` (`~/.claude/tech-humanizer/`, shared across every project) from two kinds of evidence: the user's own conversation messages (2+ complete sentences, 30+ words triggers sampling), and documents or pasted text the user explicitly flags as their own writing. A flagged document is worth actively asking for -- when a user wants their voice learned quickly rather than over several sessions, ask them to paste or share a few paragraphs they wrote themselves. The skill extracts descriptive structural observations, not numeric measurements, spanning both sentence-level rhythm (length variation, punctuation habits, pacing) and passage-level habits (what the user leads with, how they sequence claim and justification, where caveats land). A pattern is committed to `syntactic_dna` only after 3 independent observations agree -- see `references/profile-schema.md` **Syntactic DNA sourcing rules** for what counts as independent.
 
-Syntactic DNA governs rhythm. Senior Engineer Voice governs content decisions. The two do not conflict.
+See **Voice Profiles** above for how syntactic_dna and the selected voice profile interact, and `references/profile-schema.md` for the full schema.
 
-Explicit preferences (word choices, domain terms, corrections to skill output) are written to `writing-profile.json` immediately when stated.
+Explicit preferences (word choices, corrections to skill output) are written to `user-profile.json` immediately when stated. Domain terms are written to the project's `writing-profile.json` instead — see **PROTECT** above.
 
-**Active capture (do not wait for "learn my style").** Write an `observations` entry (with a `confidence` field) whenever the user corrects, reverts, restates, or supplies their own writing — not only on an explicit request. Observations accumulate cheaply and promote to a `preference` or `syntactic_dna` entry once confidence or agreement crosses the threshold (the 3-session rule still governs `syntactic_dna` rhythm). When the user **reverts** an edit, record a `do_not_change` (negative preference) so the reverted change does not recur — capture the pattern, the reason, and an example. See `references/profile-schema.md`.
+**Check built-ins before writing the profile.** If the correction is already covered by a rule in `references/ai-markers.md` or `references/ai-style-lexicon.json` (for example, rejecting a decorative unicode bullet — S12), apply that rule and skip the profile write. Only genuinely personal patterns belong in the profile.
 
-Example: the user reverts `get -> retrieve` back to `get`. Write a `do_not_change` entry: pattern `get -> retrieve`, reason "plain verb, not jargon", example "get the project number". A future session reads it as a first-class block, not a comment.
+**The four trigger types** checked by workflow step 7: a correction, a revert, a restatement of skill output, and a self-flagged writing sample. On any of these, write an `observations` entry (with a `confidence` field). Observations accumulate cheaply and promote to a `preference` or `syntactic_dna` entry once confidence or agreement crosses the threshold (the 3-observation rule still governs `syntactic_dna`). A **revert** specifically records a `do_not_change` (negative preference) so the reverted change does not recur — generalize to the class the correction implies, not the single literal instance, and capture the pattern, the reason, and examples. See `references/profile-schema.md`.
 
-Sampling never applies to text submitted for humanization. Only the user's own typed messages qualify as style evidence.
+Example: the user reverts `get -> retrieve` back to `get`. Write a `do_not_change` entry: pattern `get -> retrieve`, reason "plain verb, not jargon", examples `["get the project number"]`. A future session reads it as a first-class block, not a comment.
+
+Sampling never applies to text submitted for humanization -- that text may be AI-generated and proves nothing about the user's own voice, no matter how it is delivered (typed, pasted, or uploaded).
 
 ## Error Handling
 
 - **Draft has no AI markers**: Return the draft unchanged and note it is already clean.
 - **Channel is unknown**: Infer the scenario from the signal checklist in workflow step 1 (length, greeting/sign-off, platform cues, person, audience) and select its voice profile. Do not default to the technical documentation register. When the scenario genuinely cannot be inferred, fall back to a neutral, factual register (never senior-engineer) and, if the choice would materially change the rewrite, ask or hedge rather than silently picking a voice.
-- **writing-profile.json is missing or malformed**: Proceed without profile preferences. Do not create the file until the user gives an explicit preference or correction.
+- **`user-profile.json` or `writing-profile.json` is missing or malformed**: Proceed without that file's preferences. Do not create either file until the user gives an explicit preference (`user-profile.json`) or domain term (`writing-profile.json`).
 - **Technical term not in `references/technical-terms.json`**: Treat unfamiliar domain terms as protected unless the user identifies them as AI marker vocabulary.
 - **Source claim cannot be verified**: Flag as source-integrity issue. Do not rewrite it to sound confident. See `references/source-and-markup-integrity.md`.
 - **Verbatim phrase conflicts with a detected AI marker**: Verbatim preservation wins. Copy the phrase as-is and adjust surrounding prose instead.

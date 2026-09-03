@@ -17,14 +17,7 @@ For every source-like claim, choose one outcome:
 
 ### Vague Source Authority
 
-Signals:
-
-- "according to sources"
-- "reports indicate"
-- "research shows"
-- "industry data suggests"
-- "available evidence shows"
-- "documented in a major report"
+Signals: `references/ai-style-lexicon.json` `source_laundering_phrases` ("according to sources", "reports indicate", "research shows", and similar).
 
 Outcome:
 
@@ -85,49 +78,19 @@ Outcome:
 - Convert to natural text or valid target markup.
 - If the markup is a template name being discussed, escape it or describe it plainly.
 
-### Internal Retrieval Tokens
+### Internal Retrieval Tokens and Tracking Parameters
 
-Signals:
-
-- `turn0search0`
-- `oaicite`
-- `oai_citation`
-- `contentReference`
-- `attached_file`
-- `grok_card`
-- `attribution`
-- `attributableIndex`
-- `+1` used as citation residue
+Signals: `references/ai-style-lexicon.json` `internal_reference_leaks` (`turn0search`, `oaicite`, `contentReference`, `utm_source=chatgpt.com`, and similar), plus `+1` used as citation residue.
 
 Outcome:
 
-- Remove the token.
+- Remove the token or tracking parameter.
 - If it stood in for a real source, ask for or name the source.
-
-### Tracking Parameters
-
-Signals:
-
-- `utm_source=chatgpt.com`
-- `utm_source=openai`
-- `utm_source=copilot.com`
-- `referrer=grok.com`
-
-Outcome:
-
-- Remove tracking parameters from normal citations and links.
-- Keep only if the text is specifically about tracking URLs.
+- Keep a tracking parameter only if the text is specifically about tracking URLs.
 
 ## Citation Placeholder Patterns
 
-Signals:
-
-- `URL`
-- `INSERT_SOURCE_URL`
-- `PASTE_YOUTUBE_VIDEO_URL_HERE`
-- `SOURCE_PUBLISHER`
-- `2025-XX-XX`
-- `[citation needed]` in non-Wikipedia prose
+Signals: `references/ai-style-lexicon.json` `placeholder_patterns` (`INSERT_SOURCE_URL`, `SOURCE_PUBLISHER`, `2025-XX-XX`, and similar), plus a bare `URL` token and `[citation needed]` in non-Wikipedia prose.
 
 Outcome:
 

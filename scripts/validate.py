@@ -113,6 +113,7 @@ def validate_skill() -> None:
         "references/profile-schema.md",
         "references/rewrite-playbook.md",
         "references/channel-style.md",
+        "references/reader-level.md",
         "references/source-and-markup-integrity.md",
         "references/final-rubric.md",
         "references/ai-style-lexicon.json",

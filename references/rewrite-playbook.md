@@ -28,11 +28,20 @@ Some draft phrases must be copied word for word into the rewrite. Synonym-swappi
 
 **If the draft is sparse, stay sparse.** Do not fill gaps with plausible details.
 
+## User Correction Handling
+
+When a user corrects a word choice (e.g., "say device, not laptop"), apply only the resulting term to the draft. The reasoning behind the correction is background for the profile, not draft content -- it never appears in the rewritten text, as a parenthetical, a footnote, or anywhere else.
+
+Before: "User is able to control own laptop."
+User correction: "not laptop -- could belong to someone else."
+After: "User is able to control own device."
+Not: "User is able to control own device (laptop may belong to other people)."
+
 ## Rewrite Sequence
 
 1. **Remove residue first**: assistant phrases, knowledge-cutoff disclaimers, placeholders, leaked citations, broken markup, and search tokens.
 2. **Identify the job of the text**: inform, request, decide, warn, summarize, persuade, document, or review.
-3. **Protect technical and user-specific terms**: consult `references/technical-terms.json` and `writing-profile.json`.
+3. **Protect technical and user-specific terms**: consult `references/technical-terms.json`, the project's `writing-profile.json` (`domain_terms`), and `user-profile.json` (personal preferences).
 4. **Replace generic claims with specific claims**: keep metrics, actors, dates, constraints, examples, and observed behavior.
 5. **Restore author ownership**: name who did what, what changed, what is uncertain, and what the reader should do.
 6. **Simplify language**: cut inflated verbs, vague adjectives, ceremonial framing, and repeated summaries.
@@ -201,6 +210,22 @@ After with source:
 
 ```text
 According to the March 2026 usage report, 2.1 million developer accounts created at least one release approval in Q1.
+```
+
+### Absolute Certainty to Scoped Claim
+
+Apply when a claim meets all three conditions: (1) uses absolute certainty language (always, never, definitely, it is clear, universally); (2) no supporting evidence appears within 2 sentences; (3) the claim is empirical -- about measurable behavior or facts, not a stated design decision or preference. Narrow the scope; do not add hedging qualifiers. Design decisions and stated preferences are exempt even without evidence.
+
+Before:
+
+```text
+This approach always outperforms the naive implementation.
+```
+
+After:
+
+```text
+This approach outperformed the naive implementation in our load tests.
 ```
 
 ## Human Writing Texture

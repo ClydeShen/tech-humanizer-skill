@@ -1,6 +1,6 @@
 {
   "name": "tech-humanizer-skill",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": false,
   "description": "Agent Skill for removing AI-writing markers while preserving technical terminology.",
   "license": "MIT",
