@@ -2,7 +2,7 @@
 
 **Project:** tech-humanizer-skill
 **Owner:** ClydeShen
-**Version:** 2.1.0
+**Version:** 2.3.0
 **Phase:** 01-discuss
 
 ## What this is

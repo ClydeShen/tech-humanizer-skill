@@ -384,3 +384,107 @@
         - it is brief and conversational (Slack-style), not a formal letter,
         - it is not dry or cold the way a terse engineering statement would be,
         - it adds no new facts beyond deploy-done + check-dashboards + ping-me.
+
+- description: "S12 guard: decorative unicode enumeration glyphs become standard Markdown list markers"
+  vars:
+    source_note: "AI-shaped lists often use decorative unicode glyphs (bullet dots, circled numbers, geometric arrows) as list markers instead of standard Markdown syntax. S12 requires stripping these unconditionally, the same way emoji and em dashes are stripped, and replacing them with a plain - or numbered list. The content of each item must survive; only the marker changes."
+    channel: "technical doc"
+    human_reference: "Rewrite the three steps as a standard Markdown list. Keep each step's content exactly. Do not use any decorative bullet or circled-number glyph as the marker."
+    expected_distinction: "Human-written Markdown uses plain - or 1. list markers; AI-shaped output decorates list markers with unicode glyphs that carry no information."
+    draft: "Deployment steps:\n① Build the image and tag it with the release version.\n② Push the image to the registry.\n● Trigger the rollout from the deploy dashboard."
+  assert:
+    - type: javascript
+      metric: strips_decorative_unicode_glyphs
+      value: |
+        return !/[①②③●▪◦➤▶]/.test(output)
+    - type: javascript
+      metric: preserves_step_content
+      value: |
+        return /build the image/i.test(output) &&
+        /push the image/i.test(output) &&
+        /trigger the rollout/i.test(output)
+
+- description: "K1 guard: trivial code comments that restate the line are removed, non-obvious comments stay"
+  vars:
+    source_note: "K1 (Over-Commented Trivial Code) flags comments that restate what the next line already says, common in generated code. A comment explaining a real constraint or workaround is not trivial and must be kept; only the restating comments should go."
+    channel: "PR description"
+    human_reference: "Keep the code as-is except: remove the comment that restates the increment, and remove the comment that restates the return. Keep the comment about the retry cap, because it explains a non-obvious constraint (rate limit), not what the line already shows."
+    expected_distinction: "Human code comments explain why when intent is not obvious; AI-generated code often comments every line regardless of whether it needs explaining."
+    draft: |
+      ```python
+      # increment the retry counter
+      retry_count += 1
+      # cap retries at 3 to stay under the upstream rate limit
+      if retry_count > 3:
+          # return the failure result
+          return failure_result
+      ```
+  assert:
+    - type: javascript
+      metric: removes_trivial_comments
+      value: |
+        return !/# increment the retry counter/i.test(output) &&
+        !/# return the failure result/i.test(output)
+    - type: javascript
+      metric: keeps_non_obvious_comment
+      value: |
+        return /rate limit/i.test(output)
+    - type: javascript
+      metric: preserves_code_logic
+      value: |
+        return /retry_count \+= 1/.test(output) &&
+        /retry_count > 3/.test(output) &&
+        /return failure_result/.test(output)
+
+- description: "Negation guard: a user's word-choice correction applies only the replacement, not the reasoning behind it"
+  vars:
+    source_note: "The owner corrected a word choice this session: 'laptop' should be 'device', because the reader's laptop may actually belong to someone else. The rewrite must apply only the resulting term. The correction's reasoning is context for learning the preference, not content -- it must never appear in the output as a parenthetical, footnote, or aside. This is the Negation failure mode: naming what to avoid (laptop, and why) makes it more likely to leak into the text, not less."
+    channel: "technical doc"
+    human_reference: "Say the user is able to control their own device. Do not mention laptop, ownership, or the reasoning for the word change anywhere in the output."
+    expected_distinction: "A correct correction is invisible in the output -- only the corrected word appears. Leaking the correction's reasoning into the text is the failure this guards against."
+    draft: "User is able to control own laptop."
+  assert:
+    - type: javascript
+      metric: applies_replacement_only
+      value: |
+        return /own device/i.test(output)
+    - type: javascript
+      metric: no_leaked_reasoning
+      value: |
+        return !/laptop/i.test(output) &&
+        !/belong/i.test(output) &&
+        !/may not be/i.test(output) &&
+        !/someone else/i.test(output)
+
+- description: "Reader language level: stated non-native audience keeps every term but flattens sentence syntax"
+  vars:
+    source_note: "The user stated the audience is non-native technical readers at roughly a B1 level. references/reader-level.md applies: terminology stays exactly as-is (agentic workflow, tool invocation, autonomy), but syntax must flatten -- one logical relationship per sentence, active voice, short explicit connectors (First, Next, If X then Y) instead of nested subordinate clauses. This is an explicit-only axis; it must not be applied unless the user states it, which this case does."
+    channel: "technical doc for a non-native (B1) engineering team"
+    human_reference: "Keep agentic workflow, tool invocation, autonomy, and self-monitoring exactly as written. Split the nested clause into short sentences connected by First/Next/If-then rather than which/that/because chains."
+    expected_distinction: "Native-register prose compresses relationships into subordinate clauses; B1-adjusted prose keeps every term but gives each relationship its own short sentence."
+    draft: "An agentic workflow, which grants the AI system a degree of autonomy over how a goal gets accomplished by decomposing the task into subtasks and invoking tools as needed, differs from a single-turn response because it monitors its own progress through self-monitoring and revises its plan when a subtask fails."
+  assert:
+    - type: javascript
+      metric: preserves_all_terms
+      value: |
+        return /agentic workflow/i.test(output) &&
+        /autonomy/i.test(output) &&
+        /tool/i.test(output) &&
+        /self-monitoring/i.test(output)
+    - type: javascript
+      metric: flattens_average_sentence_length
+      value: |
+        const sentences = output.split(/(?<=[.!?])\s+/).filter(Boolean);
+        const avgWords = sentences.reduce((sum, s) => sum + s.trim().split(/\s+/).length, 0) / sentences.length;
+        return avgWords <= 14;
+    - type: llm-rubric
+      metric: b1_syntax_native_terms
+      value: |
+        Source-derived distinction: {{expected_distinction}}
+        Human reference criterion: {{human_reference}}
+
+        Pass only if the output:
+        - preserves every technical term from the draft exactly (agentic workflow, tool invocation, autonomy, self-monitoring),
+        - expresses each logical relationship (cause, condition, contrast) in its own short sentence rather than a nested clause,
+        - uses active voice with a named actor (the system / it) rather than passive constructions,
+        - does not add explanatory glosses for terms the audience is assumed to already know.

@@ -35,3 +35,9 @@ Comment-style residue: <count>
   Fragment: "<text>"
   Issue: <why it reads AI-shaped>
   Rewrite example: "<example>"
+
+Code: <count>
+- Location: <file/line>
+  Fragment: "<text>"
+  Issue: <why it reads AI-shaped>
+  Rewrite example: "<example>"

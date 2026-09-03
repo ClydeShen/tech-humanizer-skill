@@ -198,10 +198,11 @@ The institute was established in 1989, marking a pivotal moment in the evolution
 
 ## Personal Voice Adaptation
 
-When `writing-profile.json` exists:
+When `user-profile.json` exists:
 
 - apply explicit replacement preferences first;
-- preserve user domain terms;
 - match the user's usual density of contractions, short sentences, and direct asks;
 - do not exaggerate personality from one sample;
 - ask before storing sensitive or highly personal style notes.
+
+When the project's `writing-profile.json` exists, preserve its `domain_terms` regardless of channel.

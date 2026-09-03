@@ -33,4 +33,4 @@ Describe what the skill actually outputted or did:
 - Version of the skill (if known):
 
 **Additional context**
-Add any other context about the problem here (e.g., config contents of `profile.json` or `writing-profile.json`).
+Add any other context about the problem here (e.g., config contents of `writing-profile.json` or `user-profile.json`).

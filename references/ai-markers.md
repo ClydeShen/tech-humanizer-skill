@@ -14,6 +14,7 @@ Use it as a diagnostic map, not as a verdict machine. A marker means "this passa
 - Communication intent markers
 - Markup, citation, and source markers
 - Wikipedia/comment-style markers
+- Code markers
 - Humanization strategy
 - Detection notes
 
@@ -41,7 +42,8 @@ Near-certain generated-text residue. Remove or repair every time, no threshold r
 - Markdown/HTML/source markup leaking into prose;
 - emoji in technical or professional prose -- remove entirely;
 - em dashes (--) in prose -- replace with comma, colon, parentheses, or sentence break;
-- curly quotes (" ") in technical or professional text -- replace with straight ASCII quotes.
+- curly quotes (" ") in technical or professional text -- replace with straight ASCII quotes;
+- decorative unicode enumeration glyphs (bullet dots, circled/enclosed numbers, geometric arrows) used as list markers -- replace with standard `-` or numbered Markdown lists.
 
 Action: remove or repair these every time. Em dashes and curly quotes that appear in code samples or quoted source material are exempt.
 
@@ -56,7 +58,8 @@ Strong AI-writing tells when repeated:
 - formulaic balanced paragraphs;
 - decorative formatting;
 - rigid inline-header lists;
-- excessive hedging.
+- excessive hedging;
+- trivial code comments that restate what the line already says.
 
 Action: rewrite when the text has more than one signal, or when the passage is meant to sound like a human author.
 
@@ -551,6 +554,25 @@ Fix:
 - Rewrite the outlier sections to match that register.
 - Do not flatten style variation -- vary sentence length and structure -- but keep the vocabulary level and tone consistent.
 
+### S12. Decorative Unicode Enumeration Glyphs
+
+Severity: **High** -- unconditional strip, no threshold required.
+
+Signal:
+
+- Bullet dots (`●`, `▪`, `◦`) used as list markers instead of Markdown `-` or `*`.
+- Circled or enclosed numbers (`①②③`) used for ordered lists.
+- Geometric arrows (`➤`, `▶`) used as list markers.
+
+Why it reads AI-shaped:
+
+These glyphs are a decorative substitute for standard list syntax, not a deliberate typographic choice. New variants (a different bullet, a different number style) are the same marker, not a new one -- treat any glyph from this category the same way rather than relearning it one symbol at a time.
+
+Fix:
+
+- Replace with a standard Markdown `-` bullet or `1.` numbered list.
+- Glyphs quoted from source material are exempt.
+
 ## Communication Intent Markers
 
 ### I1. Assistant Service Language
@@ -779,13 +801,33 @@ Fix:
 
 - Name the exact change: "Removed unsourced claim about adoption", "Replaced vague attribution with CNCF survey citation."
 
+## Code Markers
+
+### K1. Over-Commented Trivial Code
+
+Signals:
+
+- A comment that restates what the next line already says (`// increment i` above `i++`).
+- Comments on nearly every line of straightforward code, including simple assignments and returns.
+- Narrating the change instead of the code: "only in X" or "original logic" language describing what was modified, left in the code or commit message rather than in the PR description.
+
+Why it reads AI-shaped:
+
+Human authors comment where intent is not obvious from the code; generated code often comments every step regardless of whether the step needs explaining.
+
+Fix:
+
+- Delete comments that add no information beyond the line itself.
+- Keep comments that explain why, not what: a non-obvious constraint, a workaround, an invariant.
+- Move narration about the change itself (what was modified and why) to the commit message or PR description, not a code comment.
+
 ## Humanization Strategy
 
 Use this sequence for stronger rewrites:
 
-1. Strip high-severity residue first: assistant language, knowledge cutoff disclaimers, placeholders, leaked references, broken markup, emoji, em dashes, curly quotes.
+1. Strip high-severity residue first: assistant language, knowledge cutoff disclaimers, placeholders, leaked references, broken markup, emoji, em dashes, curly quotes, decorative unicode enumeration glyphs.
 2. Protect technical terms and user-preferred domain terms.
-3. Replace vague authority and grand claims with evidence or narrower claims. Apply Claim Scoping when a claim meets all three conditions: uses absolute certainty language (always, never, definitely, it is clear), has no supporting evidence within 2 sentences, and is empirical. Narrow the scope -- do not add hedging qualifiers. Design decisions and stated preferences are exempt.
+3. Replace vague authority and grand claims with evidence or narrower claims. Apply Claim Scoping (`references/rewrite-playbook.md § Absolute Certainty to Scoped Claim`) to unsupported absolute-certainty empirical claims.
 4. Reduce inflated vocabulary and formal padding. When replacing a vocabulary marker, check the `era` field in `references/ai-style-lexicon.json` -- current-era terms are stronger signals than legacy ones.
 5. Repair structure: headings, lists, tables, duplicated summaries. Check for S11 intra-document register shifts and unify the dominant register.
 6. Tune register for the target channel.

@@ -5,7 +5,7 @@ Thanks for helping improve `tech-humanizer-skill`. This is a personal open-sourc
 ## Good Contributions
 
 - Add or refine AI-writing markers in `references/ai-markers.md`.
-- Expand the technical terminology whitelist in `references/technical-terms.md`.
+- Expand the technical terminology whitelist in `references/technical-terms.json`.
 - Improve profile behavior in `references/profile-schema.md` or `SKILL.md`.
 - Add evals for missed AI markers, false positives, or technical-term preservation.
 - Improve documentation for installation or compatibility with agent tools.
@@ -14,7 +14,7 @@ Thanks for helping improve `tech-humanizer-skill`. This is a personal open-sourc
 
 1. Keep `SKILL.md` lean. Put detailed rules in `references/`.
 2. Keep supporting files one level deep under `references/`, `scripts/`, or `assets/`.
-3. Add or update evals in `evals.json` for any behavior change.
+3. Add or update evals in `evals/examples.yaml` for any behavior change.
 4. Run validation:
 
 ```bash
@@ -36,7 +36,7 @@ Update `references/ai-markers.md` with:
 - rewrite behavior;
 - at least one concrete example if useful.
 
-Then add an eval entry in `evals.json` with:
+Then add an eval entry in `evals/examples.yaml` with:
 
 - a realistic user prompt;
 - expected output behavior;

@@ -60,6 +60,7 @@ Ask: "Are there abstract words stacked where a concrete measurement, a simple ve
 - Emoji: remove entirely
 - Em dashes: replace with comma, colon, or parentheses
 - Curly quotes: replace with straight ASCII quotes
+- Decorative unicode enumeration glyphs (S12): bullet dots, circled numbers, geometric arrows used as list markers -- replace with standard Markdown lists
 
 **Scored formatting markers:**
 - Title case on ordinary mid-sentence nouns, verbs, or adjectives (not acronyms or product names)
@@ -70,5 +71,6 @@ Ask: "Are there abstract words stacked where a concrete measurement, a simple ve
 - Formulaic summary blocks: "Key Takeaways" or "In summary" sections that restate the preceding content
 - Over-sectioned output: more headings than the content justifies
 - Intra-document register shift (S11): abrupt change in writing quality or tone between sections of the same document
+- Over-commented trivial code (K1): comments that restate what the line already says
 
 Ask: "Does the formatting follow standard engineering Markdown conventions? Does the document read at a consistent register throughout?"
