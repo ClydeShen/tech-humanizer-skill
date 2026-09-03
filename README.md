@@ -84,7 +84,7 @@ This skill uses the standard `SKILL.md` layout and is compatible with:
 Unlike cloud humanizers, this skill splits what it learns across two local, private files instead of a cloud account:
 
 - **`writing-profile.json`**, in your project root, ignored by Git — your team's nomenclature. Define nomenclature: "Always use *Registry*, never *Store*."
-- **`user-profile.json`**, at `~/.claude/tech-humanizer/`, shared across every project — your own personal style. Store samples: give the skill a few of your own sentences to match your register. Internalize corrections: if you correct an AI word twice, the skill will not use it again, in this project or any other.
+- **`user-profile.json`**, at `~/.tech-humanizer/`, shared across every project — your own personal style. Store samples: give the skill a few of your own sentences to match your register. Internalize corrections: if you correct an AI word twice, the skill will not use it again, in this project or any other.
 
 Keeping them separate means your personal writing habits travel with you between projects, while one project's internal jargon never leaks into another.
 
